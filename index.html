@@ -1,0 +1,867 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<title>大模型如何工作 · 训练 / 推理 / Agent 三幕讲透</title>
+<style>
+:root{
+  --bg:#f3f6fb; --panel:#ffffff; --panel2:#eaf1f9; --ink:#10233f; --muted:#4d6484;
+  --line:#c9d8ea; --blue:#0b5cad; --cyan:#0787a8; --cyan-soft:#dff3f8;
+  --orange:#e85d04; --orange-soft:#fdeede; --green:#12805c; --green-soft:#e0f4ec;
+  --red:#c92a2a; --red-soft:#fdecec; --amber:#b7791f; --amber-soft:#fdf3d7;
+  --code-bg:#0d2138; --code-ink:#d7ecff;
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0a1524; --panel:#122238; --panel2:#16293f; --ink:#e8f1fb; --muted:#9db4d0;
+    --line:#2b4562; --blue:#4dabf7; --cyan:#3bc9db; --cyan-soft:#10333d;
+    --orange:#ffa94d; --orange-soft:#3d2a12; --green:#51cf9f; --green-soft:#12382b;
+    --red:#ff8787; --red-soft:#3d1a1a; --amber:#ffd43b; --amber-soft:#3a3010;
+    --code-bg:#060f1c; --code-ink:#d7ecff;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:17px;line-height:1.65;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:56px 56px;background-position:center top;}
+body::before{content:"";position:fixed;inset:0;background:var(--bg);opacity:.88;z-index:-1}
+.wrap{max-width:1180px;margin:0 auto;padding:0 18px 80px}
+h1,h2,h3{line-height:1.3;margin:0}
+.mono{font-family:ui-monospace,"SF Mono",Consolas,Menlo,monospace}
+.num{font-family:ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums}
+
+/* nav */
+nav.top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav.top .inner{max-width:1180px;margin:0 auto;padding:10px 18px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+nav.top .brand{font-weight:800;font-size:15px;margin-right:6px;color:var(--blue)}
+nav.top a{color:var(--ink);text-decoration:none;font-size:14.5px;font-weight:600;padding:7px 13px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+nav.top a:hover{border-color:var(--cyan);color:var(--cyan)}
+
+/* hero */
+.hero{padding:44px 0 8px}
+.hero .kicker{color:var(--cyan);font-weight:700;font-size:15px;letter-spacing:.04em}
+.hero h1{font-size:clamp(30px,5.4vw,52px);font-weight:900;margin:10px 0 12px}
+.hero h1 .hl{color:var(--orange)}
+.hero p.lead{font-size:clamp(17px,2.4vw,21px);color:var(--muted);max-width:760px;margin:0 0 8px}
+.hero p.lead b{color:var(--ink)}
+
+/* generic panels */
+section.act{margin-top:56px;scroll-margin-top:76px}
+.act-head{display:flex;gap:16px;align-items:flex-start;margin-bottom:18px}
+.act-no{flex:none;width:52px;height:52px;border-radius:12px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;font-family:ui-monospace,monospace}
+.act-head h2{font-size:clamp(24px,3.6vw,34px);font-weight:900}
+.act-head p{margin:4px 0 0;color:var(--muted);max-width:720px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h3{font-size:19px;font-weight:800;margin-bottom:8px}
+.grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr}}
+
+/* term chips */
+.term{display:inline-block;cursor:pointer;border:1.5px dashed var(--cyan);color:var(--cyan);background:var(--cyan-soft);
+  border-radius:999px;padding:0 9px;margin:0 2px;font-size:.92em;font-weight:700;white-space:nowrap;line-height:1.7}
+.term:hover{background:var(--cyan);color:#fff}
+.term small{font-weight:500;opacity:.85}
+#termPop{position:fixed;z-index:99;width:min(330px,calc(100vw - 24px));background:var(--panel);border:2px solid var(--cyan);
+  border-radius:14px;padding:16px 18px;box-shadow:0 14px 40px rgba(6,30,60,.28);display:none}
+#termPop.show{display:block}
+#termPop .t-name{font-weight:900;font-size:17px}
+#termPop .t-en{color:var(--muted);font-size:13.5px;font-family:ui-monospace,monospace}
+#termPop .t-plain{margin:8px 0;font-size:15.5px}
+#termPop .t-where{font-size:13px;color:var(--cyan);font-weight:700}
+#termPop .t-close{position:absolute;top:8px;right:12px;border:none;background:none;font-size:20px;cursor:pointer;color:var(--muted)}
+
+/* buttons */
+.btn{appearance:none;border:1.5px solid var(--blue);background:var(--blue);color:#fff;font-weight:700;font-size:16px;
+  padding:10px 20px;border-radius:10px;cursor:pointer;font-family:inherit}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:var(--panel);color:var(--blue)}
+.btn.ghost:hover{background:var(--panel2)}
+.btn.orange{border-color:var(--orange);background:var(--orange)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.sm{padding:6px 14px;font-size:14.5px}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* step player */
+.player{display:grid;grid-template-columns:1.3fr 1fr;gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel)}
+@media(max-width:860px){.player{grid-template-columns:1fr}}
+.stage{padding:22px;min-height:340px;display:flex;flex-direction:column}
+.stage .viz{flex:1;display:flex;flex-direction:column;justify-content:center;gap:14px}
+.side{border-left:1px solid var(--line);background:var(--panel2);padding:22px;display:flex;flex-direction:column}
+@media(max-width:860px){.side{border-left:none;border-top:1px solid var(--line)}}
+.dots{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.dots i{width:26px;height:8px;border-radius:99px;background:var(--line);cursor:pointer}
+.dots i.on{background:var(--cyan)}
+.side h3{font-size:21px;font-weight:900;margin-bottom:6px}
+.side .step-body{color:var(--muted);font-size:16px;flex:1}
+.side .step-body b{color:var(--ink)}
+.side .ctrl{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.prog{font-size:13.5px;color:var(--muted);font-family:ui-monospace,monospace}
+
+/* token visuals */
+.toks{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tok{border:2px solid var(--blue);color:var(--blue);background:var(--panel);border-radius:10px;padding:8px 16px;font-size:22px;font-weight:800}
+.tok.hot{border-color:var(--orange);color:var(--orange);background:var(--orange-soft)}
+.tok.dim{opacity:.45}
+.tok.new{border-color:var(--green);color:var(--green);background:var(--green-soft)}
+.arrow{font-size:22px;color:var(--muted)}
+.big-sentence{font-size:clamp(24px,4vw,34px);font-weight:900;letter-spacing:.02em}
+.big-sentence .cursor{display:inline-block;width:3px;height:1em;background:var(--orange);vertical-align:-2px;animation:blink 1s steps(1) infinite;margin-left:2px}
+@keyframes blink{50%{opacity:0}}
+.guess-note{color:var(--muted);font-size:15px}
+.guess-note b{color:var(--orange)}
+
+/* knobs (parameters) */
+.knobs{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.knob{text-align:center}
+.knob .dial{width:74px;height:74px;border-radius:50%;border:3px solid var(--blue);background:var(--panel2);position:relative;margin:0 auto 6px;transition:transform .5s}
+.knob .dial::after{content:"";position:absolute;left:50%;top:6px;width:4px;height:26px;background:var(--orange);border-radius:2px;transform:translateX(-50%)}
+.knob span{font-size:13.5px;color:var(--muted);font-family:ui-monospace,monospace}
+.loss-big{font-size:44px;font-weight:900;color:var(--orange);font-family:ui-monospace,monospace;text-align:center}
+.loss-label{text-align:center;color:var(--muted);font-size:14.5px}
+
+/* slider block */
+.slider-block{margin-top:18px}
+.slider-block label{font-weight:800;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.slider-block label output{color:var(--orange);font-family:ui-monospace,monospace}
+input[type=range]{width:100%;accent-color:var(--orange);height:34px;cursor:pointer}
+.lr-verdict{border-radius:10px;padding:10px 14px;font-weight:700;font-size:15.5px;margin-top:6px}
+.lr-verdict.ok{background:var(--green-soft);color:var(--green)}
+.lr-verdict.warn{background:var(--amber-soft);color:var(--amber)}
+.lr-verdict.bad{background:var(--red-soft);color:var(--red)}
+svg.chart{width:100%;height:auto;display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+svg.chart text{fill:var(--muted);font-size:11px;font-family:ui-monospace,monospace}
+svg.chart .axis{stroke:var(--line)}
+svg.chart .curve{fill:none;stroke:var(--orange);stroke-width:2.5}
+
+/* 4-grid hand calc */
+.calc4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:860px){.calc4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.calc4{grid-template-columns:1fr}}
+.calc-cell{border:2px solid var(--line);border-radius:12px;padding:14px;background:var(--panel);transition:border-color .3s,background .3s}
+.calc-cell.on{border-color:var(--orange);background:var(--orange-soft)}
+.calc-cell .n{display:inline-block;background:var(--blue);color:#fff;border-radius:99px;width:24px;height:24px;text-align:center;line-height:24px;font-weight:800;font-size:14px;margin-bottom:6px}
+.calc-cell .f{font-family:ui-monospace,monospace;font-size:16.5px;font-weight:700}
+.calc-cell p{margin:4px 0 0;font-size:14px;color:var(--muted)}
+
+/* tables / matrices */
+table.mx{border-collapse:separate;border-spacing:6px;margin:0 auto}
+table.mx th{font-size:15px;color:var(--muted);font-weight:700;padding:2px 6px}
+table.mx td.cell{border:2px solid var(--line);border-radius:8px;padding:9px 13px;text-align:center;font-family:ui-monospace,monospace;font-weight:700;font-size:17px;background:var(--panel);cursor:pointer;min-width:52px}
+table.mx td.cell:hover{border-color:var(--cyan)}
+table.mx td.heat{cursor:pointer;color:#fff;border:none}
+.cell-explain{margin-top:12px;background:var(--cyan-soft);border-radius:10px;padding:10px 14px;font-size:15px;min-height:52px}
+.cell-explain b{color:var(--cyan)}
+
+/* prob bars */
+.prob-row{display:grid;grid-template-columns:52px 1fr 64px;gap:10px;align-items:center;margin:7px 0}
+.prob-row .w{font-weight:800;font-size:19px}
+.prob-row .bar{height:22px;background:var(--panel2);border-radius:6px;overflow:hidden}
+.prob-row .bar i{display:block;height:100%;background:var(--cyan);border-radius:6px;transition:width .6s}
+.prob-row.top .bar i{background:var(--orange)}
+.prob-row .p{font-family:ui-monospace,monospace;font-weight:700;text-align:right}
+.picked-note{font-weight:700;margin-top:8px}
+.picked-note b{color:var(--orange);font-size:20px}
+
+/* dev box + quiz */
+.devbox{margin-top:18px;border:2px solid var(--blue);border-radius:var(--radius);background:var(--panel);padding:20px}
+.devbox h3{color:var(--blue)}
+.devbox ul{margin:8px 0 0;padding-left:20px}
+.devbox li{margin:5px 0}
+.devbox li b{color:var(--orange)}
+pre.code{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:16px 18px;overflow-x:auto;font-size:14px;line-height:1.6;margin:12px 0 0}
+@media(max-width:560px){pre.code{white-space:pre-wrap;word-break:break-word;font-size:13px}}
+pre.code .cm{color:#7fb3d9}
+.quiz{margin-top:18px}
+.quiz .q{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;margin-top:12px}
+.quiz .q p.qq{font-weight:800;margin:0 0 10px;font-size:17px}
+.quiz .opts{display:flex;flex-direction:column;gap:8px}
+.quiz .opt{text-align:left;border:1.5px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 14px;font-size:16px;cursor:pointer;font-family:inherit;color:var(--ink)}
+.quiz .opt:hover{border-color:var(--cyan)}
+.quiz .opt.right{border-color:var(--green);background:var(--green-soft);font-weight:700}
+.quiz .opt.wrong{border-color:var(--red);background:var(--red-soft)}
+.quiz .why{display:none;margin-top:10px;font-size:15px;color:var(--muted);background:var(--panel2);border-radius:8px;padding:9px 13px}
+.quiz .why.show{display:block}
+.quiz .why b{color:var(--green)}
+
+/* agent */
+.ctx-list{display:flex;flex-direction:column;gap:8px}
+.msg{border-radius:10px;padding:9px 13px;font-size:14.5px;border:1.5px solid;word-break:break-word}
+.msg .role{font-weight:900;font-size:12.5px;letter-spacing:.05em;display:block;margin-bottom:2px}
+.msg.system{border-color:#7f5af0;background:#f0ebfd;color:#3d2b8f}
+.msg.user{border-color:var(--blue);background:var(--cyan-soft);color:var(--ink)}
+.msg.assistant{border-color:var(--green);background:var(--green-soft);color:var(--ink)}
+.msg.tool{border-color:var(--orange);background:var(--orange-soft);color:var(--ink)}
+@media (prefers-color-scheme: dark){.msg.system{background:#241a4d;color:#cfc2ff}}
+.msg .mono{font-size:13px}
+.ctxbar-wrap{margin-top:14px}
+.ctxbar{height:18px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.ctxbar i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--orange));width:4%;transition:width .7s}
+.ctxbar-label{font-size:13.5px;color:var(--muted);font-family:ui-monospace,monospace;margin-top:4px}
+.toolcards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.toolcards{grid-template-columns:1fr}}
+.toolcard{border:2px dashed var(--line);border-radius:12px;padding:14px;background:var(--panel);transition:all .3s}
+.toolcard.live{border:2px solid var(--orange);background:var(--orange-soft)}
+.toolcard h4{margin:0 0 4px;font-size:16px}
+.toolcard p{margin:0;font-size:14px;color:var(--muted)}
+.toolcard .st{font-family:ui-monospace,monospace;font-size:13px;font-weight:700;color:var(--muted)}
+.toolcard.live .st{color:var(--orange)}
+.fail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+@media(max-width:860px){.fail-grid{grid-template-columns:1fr}}
+.fail{border:1.5px solid var(--red);border-radius:var(--radius);padding:16px;background:var(--panel)}
+.fail h4{margin:0 0 6px;color:var(--red);font-size:16.5px}
+.fail p{margin:0;font-size:15px;color:var(--muted)}
+.fail p b{color:var(--ink)}
+.scale-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+@media(max-width:860px){.scale-row{grid-template-columns:1fr}}
+.scale{background:var(--code-bg);color:var(--code-ink);border-radius:var(--radius);padding:18px}
+.scale .big{font-size:26px;font-weight:900;color:#ffa94d;font-family:ui-monospace,monospace}
+.scale p{margin:4px 0 0;font-size:14.5px;color:#a9c6e2}
+.foot{margin-top:64px;border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:14.5px}
+.note{font-size:13.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<nav class="top"><div class="inner">
+  <span class="brand">LLM 实验室</span>
+  <a href="#intro">0 · 直觉</a>
+  <a href="#training">第一幕 · 训练</a>
+  <a href="#inference">第二幕 · 推理</a>
+  <a href="#agent">第三幕 · Agent</a>
+</div></nav>
+
+<div class="wrap">
+
+<!-- ============ 0 开场 ============ -->
+<header class="hero" id="intro">
+  <div class="kicker">给 0 基础的你 · 也给写前后端 / Agent 的你</div>
+  <h1>大模型，只做一件事：<span class="hl">猜下一个词</span></h1>
+  <p class="lead">ChatGPT 们看起来无所不知，内核却简单得惊人：给它一串词，它算出<b>下一个词最可能是什么</b>，拼上去，再猜下一个。训练、推理、Agent 三幕，全是这一件事的不同侧面。</p>
+  <p class="lead">全站只用两个例子：<b>「猫 吃 鱼」</b>讲训练与推理；<b>「查明天上海天气」</b>讲 Agent。带虚线下划的词都可以点开看人话解释。</p>
+</header>
+
+<section class="act" style="margin-top:28px">
+  <div class="card">
+    <h3>先亲手玩一下：点一次，长出一个词</h3>
+    <div class="big-sentence" id="introSentence">今天天气<span class="cursor"></span></div>
+    <p class="guess-note" id="introNote">模型心里在想：接「真」有 <b>41%</b> 把握，接「很」有 23%，接「不」有 9%……</p>
+    <div class="btnrow" style="margin-top:12px">
+      <button class="btn orange" id="introGen">✦ 生成下一个词</button>
+      <button class="btn ghost" id="introReset">重来</button>
+      <span class="note">每点一次，它只猜一个词，然后把新词拼回句子、再猜下一个——这就叫<span class="term" data-term="autoregressive">逐词往外蹦 <small>自回归</small></span>。</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 第一幕 训练 ============ -->
+<section class="act" id="training">
+  <div class="act-head">
+    <div class="act-no">1</div>
+    <div>
+      <h2>第一幕 · 训练：它是怎么「学会」接龙的？</h2>
+      <p>训练 = 让一台一开始满嘴胡话的机器，做几亿道「猜下一个词」的填空题，每错一次就微调自己一点点。用步进器慢慢看：</p>
+    </div>
+  </div>
+
+  <div class="player" id="trainPlayer">
+    <div class="stage"><div class="viz" id="trainViz"></div></div>
+    <div class="side">
+      <div class="dots" id="trainDots"></div>
+      <h3 id="trainTitle"></h3>
+      <div class="step-body" id="trainBody"></div>
+      <div class="ctrl">
+        <button class="btn ghost sm" id="trainPrev">← 上一步</button>
+        <button class="btn sm" id="trainPlay">▶ 播放</button>
+        <button class="btn ghost sm" id="trainNext">下一步 →</button>
+        <span class="prog" id="trainProg"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:18px">
+    <div class="card">
+      <h3>动手拧一下：步子迈多大？<span class="term" data-term="lr">步长 <small>学习率</small></span></h3>
+      <p style="color:var(--muted);margin:0">每次改参数，步子迈多大最合适？拖动滑杆，看右边<span class="term" data-term="loss">错题分数 <small>Loss</small></span>曲线怎么变。这是训练里最要命的一个设置。</p>
+      <div class="slider-block">
+        <label>学习率 <output id="lrOut">0.10</output></label>
+        <input type="range" id="lrRange" min="2" max="120" value="10">
+      </div>
+      <div class="lr-verdict ok" id="lrVerdict"></div>
+      <div class="btnrow" style="margin-top:12px">
+        <button class="btn orange sm" id="lrRun">▶ 用这个步长训 30 轮</button>
+        <span class="note">教学简化曲线：真实训练同理，只是轮次以亿计。</span>
+      </div>
+    </div>
+    <div>
+      <svg class="chart" id="lossChart" viewBox="0 0 420 300" role="img" aria-label="Loss 下降曲线"></svg>
+      <p class="note" style="margin-top:6px">纵轴 = 错题分数 Loss（越低越好）· 横轴 = 训练轮次。曲线由左侧滑杆实时算出，不是图片。</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>别怕，再手算一次：只有 1 个旋钮时，一轮训练长什么样？</h3>
+    <p style="color:var(--muted);margin-top:0">真实模型有上千亿个旋钮，原理和 1 个旋钮时<b style="color:var(--ink)">一模一样</b>。点「一步步算」逐格看：</p>
+    <div class="calc4" id="calc4">
+      <div class="calc-cell"><span class="n">1</span><div class="f">预测 = 输入 × 旋钮</div><div class="f num">2 × 0.5 = 1.0</div><p>输入 2，旋钮（权重 w）现在是 0.5，模型猜出 1.0。</p></div>
+      <div class="calc-cell"><span class="n">2</span><div class="f">对答案，算错多少</div><div class="f num">真实 = 3，Loss = (1−3)² = 4</div><p>正确答案是 3，猜错了，错题分数 Loss = 4。</p></div>
+      <div class="calc-cell"><span class="n">3</span><div class="f">这个旋钮该往哪拧？</div><div class="f num">梯度 = −8（负 = 该调大）</div><p><span class="term" data-term="gradient">方向盘 <small>梯度</small></span>告诉每个旋钮：往哪拧、拧多少，错就能变小。</p></div>
+      <div class="calc-cell"><span class="n">4</span><div class="f">拧一下（步长 0.1）</div><div class="f num">w = 0.5 − 0.1×(−8) = 1.3</div><p>新预测 = 2×1.3 = 2.6，已经很接近 3 了。再来几轮就几乎不差。</p></div>
+    </div>
+    <div class="btnrow" style="margin-top:14px"><button class="btn sm" id="calcPlay">▶ 一步步算</button><button class="btn ghost sm" id="calcReset">重置</button></div>
+  </div>
+
+  <div class="scale-row">
+    <div class="scale"><div class="big">≈ 10 万亿词</div><p>训练数据量级：近乎整个公开互联网的文本，都被切成填空题喂给它。</p></div>
+    <div class="scale"><div class="big">≈ 千亿个旋钮</div><p>参数量级：GPT 级别模型有上千亿个可调旋钮，每个都要算梯度、被拧动。</p></div>
+    <div class="scale"><div class="big">数万块 GPU · 数月</div><p>算力量级：一次完整训练烧掉的电费以千万美元计——这就是它「贵」的来源。</p></div>
+  </div>
+  <p class="note" style="margin-top:8px">本页所有数字均为教学简化值；真实训练是「亿级参数 × 亿万次重复」同一套动作。</p>
+
+  <div class="devbox">
+    <h3>给开发者的落点 · 训练这一幕和你有什么关系？</h3>
+    <ul>
+      <li><b>你几乎不会从零训练</b>大模型——成本是千万美元级。你真正会做的是三件事：直接调 API、在现成模型上<span class="term" data-term="finetune">小班补课 <small>微调 Fine-tuning</small></span>、写好提示词。</li>
+      <li><b>成本花在哪</b>：从零训 = 数据 + GPU 集群 + 电费；微调便宜几个数量级；调 API 是按量付费，零前期投入。</li>
+      <li>所以面试和工作中说的「做大模型」，99% 指的是<b>用</b>模型，不是<b>造</b>模型。造模型是少数大厂的核心团队在做的事。</li>
+    </ul>
+  </div>
+
+  <div class="quiz" data-quiz="train"></div>
+</section>
+
+<!-- ============ 第二幕 推理 ============ -->
+<section class="act" id="inference">
+  <div class="act-head">
+    <div class="act-no">2</div>
+    <div>
+      <h2>第二幕 · 推理：训好的模型，怎么算出「鱼」？</h2>
+      <p>还是那只猫。模型已经训好，现在给它「猫 吃」，看它的大脑内部一步步算出下一个词是「鱼」。点矩阵里的任意一格，可以看那一格是怎么来的。</p>
+    </div>
+  </div>
+
+  <div class="player" id="inferPlayer">
+    <div class="stage"><div class="viz" id="inferViz"></div></div>
+    <div class="side">
+      <div class="dots" id="inferDots"></div>
+      <h3 id="inferTitle"></h3>
+      <div class="step-body" id="inferBody"></div>
+      <div class="ctrl">
+        <button class="btn ghost sm" id="inferPrev">← 上一步</button>
+        <button class="btn sm" id="inferPlay">▶ 播放</button>
+        <button class="btn ghost sm" id="inferNext">下一步 →</button>
+        <span class="prog" id="inferProg"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-top:18px">
+    <div class="card">
+      <h3>亲手调：回答的「疯癫程度」<span class="term" data-term="temperature">随机度 <small>温度 Temperature</small></span></h3>
+      <p style="color:var(--muted);margin:0">第 5 步「挑词」不是永远挑第一名。温度越低越保守、越爱选最高分；越高越敢选冷门词——写代码要低温，写诗可以高温。</p>
+      <div class="slider-block">
+        <label>温度 <output id="tempOut">0.7</output></label>
+        <input type="range" id="tempRange" min="0" max="200" value="70">
+      </div>
+      <div id="tempProbs" style="margin-top:10px"></div>
+      <div class="btnrow" style="margin-top:10px">
+        <button class="btn orange sm" id="tempPick">🎲 按这个温度抽一个词</button>
+        <span class="picked-note" id="tempPicked"></span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>为什么「吃」必须回头看「猫」？</h3>
+      <p style="color:var(--muted)">单独看「吃」，下一个词可能是饭、面、药……是「猫」在吃，才轮到「鱼」登场。<span class="term" data-term="attention">互相打量 <small>注意力 Attention</small></span>就是让每个词在做决定前，先按重要程度把其他词「看一遍」：主语是谁、和自己有没有关系。</p>
+      <p style="color:var(--muted)">这也是 Transformer 架构的核心发明——2017 年那篇著名论文标题就叫 <span class="mono">Attention Is All You Need</span>（你只需要注意力）。</p>
+      <p style="color:var(--muted);margin-bottom:0">左边步进器第 3 步的热力图里，点任意一格看看具体的「看」法。</p>
+    </div>
+  </div>
+
+  <div class="devbox">
+    <h3>给开发者的落点 · 推理这一幕和你有什么关系？</h3>
+    <ul>
+      <li><b>为什么按 token 收费、按 token 限长</b>：模型每生成 1 个词就要把整个网络算一遍，算力正比于词数。输入 + 输出的 token 数，就是账单和延迟的来源。</li>
+      <li><b>为什么要流式输出</b>：逐词生成天然是一个一个往外蹦的，等全部生成完再返回，用户要盯着白屏好几秒——所以前端用流式（SSE / WebSocket）接一个渲染一个。</li>
+      <li><span class="term" data-term="kvcache">备忘录 <small>KV Cache</small></span>：已经算过的词的结果会被缓存复用，不必每步从头重算——这是推理能跑得动的关键优化，也是显存吃紧的原因。</li>
+    </ul>
+  </div>
+
+  <div class="quiz" data-quiz="infer"></div>
+</section>
+
+<!-- ============ 第三幕 Agent ============ -->
+<section class="act" id="agent">
+  <div class="act-head">
+    <div class="act-no">3</div>
+    <div>
+      <h2>第三幕 · Agent：会自己干活的模型</h2>
+      <p>场景：你说「查一下明天上海的天气，下雨就提醒我带伞」。模型本身不会查天气——它会<b>指挥你的后端代码去查</b>。所谓 Agent，就是围着模型写的一个循环：</p>
+    </div>
+  </div>
+
+  <div class="player" id="agentPlayer" style="grid-template-columns:1.15fr 1fr">
+    <div class="stage">
+      <div class="viz" style="justify-content:flex-start">
+        <div class="ctx-list" id="ctxList"></div>
+        <div class="ctxbar-wrap">
+          <div class="ctxbar"><i id="ctxBarFill"></i></div>
+          <div class="ctxbar-label" id="ctxBarLabel">上下文：0 / 200,000 tokens</div>
+        </div>
+        <div class="toolcards">
+          <div class="toolcard" id="toolWeather"><h4>🌦 天气工具 <span class="mono" style="font-size:13px">get_weather()</span></h4><p>你的后端代码：真的去调天气 API。</p><div class="st" id="toolWeatherSt">状态：待命</div></div>
+          <div class="toolcard" id="toolRemind"><h4>⏰ 提醒工具 <span class="mono" style="font-size:13px">set_reminder()</span></h4><p>你的后端代码：真的去建一条提醒。</p><div class="st" id="toolRemindSt">状态：待命</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="side">
+      <div class="dots" id="agentDots"></div>
+      <h3 id="agentTitle"></h3>
+      <div class="step-body" id="agentBody"></div>
+      <div class="ctrl">
+        <button class="btn ghost sm" id="agentPrev">← 上一步</button>
+        <button class="btn sm" id="agentPlay">▶ 播放循环</button>
+        <button class="btn ghost sm" id="agentNext">下一步 →</button>
+        <span class="prog" id="agentProg"></span>
+      </div>
+      <p class="note" style="margin-top:12px">左边颜色图例：<b style="color:#7f5af0">紫 = 系统设定</b> · <b style="color:var(--blue)">蓝 = 用户</b> · <b style="color:var(--green)">绿 = 模型</b> · <b style="color:var(--orange)">橙 = 工具结果</b>。这四种消息拼成的列表，就是每轮发给模型的全部内容。</p>
+    </div>
+  </div>
+
+  <div class="fail-grid">
+    <div class="fail"><h4>⚠ 翻车点 1：上下文塞满</h4><p>聊太久、工具结果太长，列表超过模型的记忆上限就装不下了。<b>对应技巧：</b>把旧对话压缩成摘要、截断不重要的部分，只留关键信息。</p></div>
+    <div class="fail"><h4>⚠ 翻车点 2：工具报错</h4><p>天气 API 超时、参数写错，后端调用失败。<b>对应技巧：</b>别吞掉错误——把报错信息也写回上下文，模型读到后会自己换个方式重试。</p></div>
+    <div class="fail"><h4>⚠ 翻车点 3：死循环</h4><p>模型反复调同一个工具、原地打转，烧的全是你的钱。<b>对应技巧：</b>在你的循环里写死最大轮数（比如 10 轮），超了就强制停下并汇报。</p></div>
+  </div>
+
+  <div class="grid2" style="margin-top:18px">
+    <div class="card"><h3>一句话祛魅 · <span class="term" data-term="rag">先查资料再答题 <small>RAG</small></span></h3><p style="color:var(--muted);margin:0">没有黑魔法：先用你的代码去文档库里搜出相关段落，<b style="color:var(--ink)">把段落拼进上下文</b>，再让模型照着答。模型没变聪明，只是答题时手边多了你递的资料。</p></div>
+    <div class="card"><h3>一句话祛魅 · <span class="term" data-term="fc">按格式点单 <small>Function Calling</small></span></h3><p style="color:var(--muted);margin:0">模型按你们事先约定的 JSON 格式，「说出」想调哪个函数、参数是什么。<b style="color:var(--ink)">真正执行的永远是你的后端代码</b>——模型只有建议权，没有执行权。</p></div>
+  </div>
+
+  <div class="devbox">
+    <h3>给开发者的落点 · Agent 的后端，就是你写的 while 循环</h3>
+    <ul>
+      <li><b>后端负责</b>：维护上下文列表、执行工具、控制最大轮数、把结果写回——全是普通后端活儿。</li>
+      <li><b>前端负责</b>：流式渲染模型逐词输出、展示「正在调用天气工具…」这类工具状态、渲染最终答复。</li>
+    </ul>
+    <pre class="code"><span class="cm"># Agent 的本质：一个 while 循环（伪代码）</span>
+messages = [system_prompt, user_msg]   <span class="cm"># 上下文列表</span>
+for step in range(MAX_STEPS):          <span class="cm"># 最大轮数，防死循环</span>
+    reply = llm.chat(messages)         <span class="cm"># 1. 调模型</span>
+    if reply.tool_call:                <span class="cm"># 2. 模型想调工具？</span>
+        result = run_tool(reply.tool_call)  <span class="cm"># 3. 你的后端真去执行</span>
+        messages.append(result)        <span class="cm"># 4. 结果写回上下文</span>
+    else:
+        return reply.text              <span class="cm"># 5. 没工具要调 = 最终答复</span></pre>
+  </div>
+
+  <div class="quiz" data-quiz="agent"></div>
+</section>
+
+<footer class="foot">
+  <p><b>三幕一句话总结：</b>训练 = 做亿道填空题、错一次拧一次旋钮；推理 = 训好的模型逐词往外蹦答案；Agent = 你的代码围着模型写了个循环，让它能指挥工具干活。你日常开发打交道的，主要是第二、三幕。</p>
+  <p>本页为教学简化演示：矩阵数值、概率、Loss 曲线均为便于理解的圆整示例，真实系统量级见第一幕的对照卡。全部交互在本机浏览器内完成。</p>
+</footer>
+
+</div>
+
+<div id="termPop" role="dialog" aria-label="术语解释">
+  <button class="t-close" id="termClose" aria-label="关闭">×</button>
+  <div class="t-name" id="termName"></div>
+  <div class="t-en" id="termEn"></div>
+  <p class="t-plain" id="termPlain"></p>
+  <div class="t-where" id="termWhere"></div>
+</div>
+
+<script>
+/* ================= 术语词典 ================= */
+var TERMS = {
+  token:{name:"词块",en:"Token",plain:"模型眼里的最小文字单位。中文里常是 1 个字或半个词。它不读「句子」，只读一串词块编号。",where:"出现：第一幕 · 第二幕"},
+  parameter:{name:"旋钮",en:"Parameter / Weight · 参数 / 权重",plain:"模型内部可以调节的数字，有上千亿个。训练的全部工作，就是把每个旋钮拧到合适的位置。",where:"出现：第一幕"},
+  loss:{name:"错题分数",en:"Loss · 损失函数",plain:"一个数字，表示模型这次猜得有多离谱。猜中概率越低，分数越高。训练的目标就是让它变小。",where:"出现：第一幕"},
+  gradient:{name:"方向盘读数",en:"Gradient · 梯度",plain:"对每个旋钮算出的一个数：告诉程序「这个旋钮往哪边拧、拧多少，错题分数会下降」。靠一种叫反向传播的算法一次性算完所有旋钮的梯度。",where:"出现：第一幕"},
+  lr:{name:"步长",en:"Learning Rate · 学习率",plain:"每次拧旋钮的幅度。太小，学到天荒地老；太大，一脚踩过头，来回震荡甚至越学越差。",where:"出现：第一幕"},
+  embedding:{name:"词的坐标",en:"Embedding · 向量表示",plain:"把每个词变成一串数字（它的「坐标」）。意思相近的词，坐标也相近——模型靠数字距离理解语义。",where:"出现：第二幕"},
+  attention:{name:"互相打量",en:"Attention · 注意力机制",plain:"每个词在做决定前，先扫一眼其他词，并按重要程度加权汇总。决定了模型能理解上下文指代关系。",where:"出现：第二幕"},
+  temperature:{name:"随机度",en:"Temperature · 温度",plain:"控制挑词时有多「敢冒险」的旋钮。低温只选最稳的词，高温会放行冷门词，输出更发散也更容易胡说。",where:"出现：第二幕"},
+  autoregressive:{name:"逐词往外蹦",en:"Autoregressive · 自回归生成",plain:"生成方式：猜一个词 → 拼回输入 → 再猜下一个，如此循环，直到生成结束标记。",where:"出现：第 0 幕 · 第二幕"},
+  kvcache:{name:"备忘录",en:"KV Cache",plain:"把已经算过的词的中间结果存起来，生成新词时直接复用，不必每步从头算。代价是吃显存。",where:"出现：第二幕"},
+  finetune:{name:"小班补课",en:"Fine-tuning · 微调",plain:"在已训好的大模型基础上，用你自己的小批数据再训一小会儿，让它擅长你的具体业务。成本远低于从零训练。",where:"出现：第一幕"},
+  context:{name:"上下文",en:"Context · 上下文窗口",plain:"每轮发给模型的全部消息列表（系统设定 + 历史对话 + 工具结果）。它的总长度有上限，超了就装不下。",where:"出现：第三幕"},
+  rag:{name:"先查资料再答题",en:"RAG · 检索增强生成",plain:"回答前先去你的文档库搜出相关段落，拼进上下文，再让模型照着答。解决模型「不知道你公司内部事」的问题。",where:"出现：第三幕"},
+  fc:{name:"按格式点单",en:"Function Calling · 函数调用",plain:"模型按约定好的 JSON 格式输出「想调用哪个函数、参数是什么」。执行函数的始终是你的后端代码。",where:"出现：第三幕"}
+};
+var termPop=document.getElementById('termPop');
+function showTerm(key,anchor){
+  var t=TERMS[key]; if(!t) return;
+  document.getElementById('termName').textContent=t.name;
+  document.getElementById('termEn').textContent=t.en;
+  document.getElementById('termPlain').textContent=t.plain;
+  document.getElementById('termWhere').textContent=t.where;
+  termPop.classList.add('show');
+  var r=anchor.getBoundingClientRect();
+  var w=Math.min(330,window.innerWidth-24);
+  var left=Math.max(12,Math.min(r.left,window.innerWidth-w-12));
+  var top=r.bottom+8; if(top+190>window.innerHeight) top=Math.max(12,r.top-200);
+  termPop.style.left=left+'px'; termPop.style.top=top+'px';
+}
+document.addEventListener('click',function(e){
+  var chip=e.target.closest('.term');
+  if(chip){ showTerm(chip.getAttribute('data-term'),chip); return; }
+  if(!e.target.closest('#termPop')) termPop.classList.remove('show');
+});
+document.getElementById('termClose').addEventListener('click',function(){termPop.classList.remove('show');});
+
+/* ================= 0 开场接龙 ================= */
+(function(){
+  var seq=[["今天天气",""],["真",.41],["不错",.38],["，",.9],["适合",.47],["出门",.52],["散步",.44],["。",.95]];
+  var notes=["模型心里在想：接「真」有 <b>41%</b> 把握，接「很」有 23%，接「不」有 9%……",
+    "「真」拼上去了。下一个：接「不错」有 <b>38%</b>，接「好」有 27%……",
+    "「不错」拼上去了。下一个几乎没悬念：标点「，」有 <b>90%</b>。",
+    "逗号之后：接「适合」有 <b>47%</b>，接「我们」有 18%……",
+    "「适合」之后：接「出门」有 <b>52%</b>，接「在家」有 21%……",
+    "「出门」之后：接「散步」有 <b>44%</b>，接「玩」有 26%……",
+    "「散步」之后：句号「。」有 <b>95%</b>——该收尾了。",
+    "生成了结束标记，停。这就是你在聊天框里看到的「一个字一个字往外蹦」的真相。"];
+  var idx=0, el=document.getElementById('introSentence'), note=document.getElementById('introNote');
+  var btn=document.getElementById('introGen');
+  function render(){
+    var s=''; for(var i=0;i<=idx&&i<seq.length;i++) s+=seq[i][0];
+    el.innerHTML=s+'<span class="cursor"></span>';
+    note.innerHTML=notes[Math.min(idx,notes.length-1)];
+    if(idx>=seq.length-1){btn.disabled=true;btn.textContent='已生成完毕 ✓';}
+  }
+  btn.addEventListener('click',function(){ if(idx<seq.length-1){idx++;render();} });
+  document.getElementById('introReset').addEventListener('click',function(){idx=0;btn.disabled=false;btn.textContent='✦ 生成下一个词';render();});
+  render();
+})();
+
+/* ================= 通用步进器 ================= */
+function makePlayer(cfg){
+  var cur=0, timer=null;
+  var dotsEl=document.getElementById(cfg.dots), vizEl=document.getElementById(cfg.viz);
+  cfg.steps.forEach(function(_,i){
+    var d=document.createElement('i'); if(i===0)d.className='on';
+    d.addEventListener('click',function(){stop();go(i);});
+    dotsEl.appendChild(d);
+  });
+  function go(i){
+    cur=Math.max(0,Math.min(cfg.steps.length-1,i));
+    var s=cfg.steps[cur];
+    document.getElementById(cfg.title).textContent=s.title;
+    document.getElementById(cfg.body).innerHTML=s.body;
+    document.getElementById(cfg.prog).textContent=(cur+1)+' / '+cfg.steps.length;
+    vizEl.innerHTML=s.viz;
+    if(s.onShow) s.onShow();
+    var ds=dotsEl.children; for(var k=0;k<ds.length;k++) ds[k].className=(k<=cur?'on':'');
+    document.getElementById(cfg.prev).disabled=(cur===0);
+    document.getElementById(cfg.next).disabled=(cur===cfg.steps.length-1);
+  }
+  function stop(){ if(timer){clearInterval(timer);timer=null;document.getElementById(cfg.play).textContent='▶ 播放';} }
+  document.getElementById(cfg.prev).addEventListener('click',function(){stop();go(cur-1);});
+  document.getElementById(cfg.next).addEventListener('click',function(){stop();go(cur+1);});
+  document.getElementById(cfg.play).addEventListener('click',function(){
+    if(timer){stop();return;}
+    if(cur===cfg.steps.length-1) go(0);
+    document.getElementById(cfg.play).textContent='⏸ 暂停';
+    timer=setInterval(function(){ if(cur>=cfg.steps.length-1){stop();return;} go(cur+1); },2600);
+  });
+  go(0);
+  return {go:go};
+}
+
+/* ================= 第一幕 训练 ================= */
+var knobViz='<div class="knobs">'+
+  [12,68,35,80,50].map(function(a,i){return '<div class="knob"><div class="dial" style="transform:rotate('+a+'deg)"></div><span>旋钮 w'+(i+1)+'</span></div>';}).join('')+
+  '</div><p class="guess-note" style="text-align:center">模型内部有<b>上千亿个</b>这样的旋钮（<span class="term" data-term="parameter">参数</span>），这里只画 5 个示意。</p>';
+makePlayer({
+  viz:'trainViz',dots:'trainDots',title:'trainTitle',body:'trainBody',prog:'trainProg',prev:'trainPrev',next:'trainNext',play:'trainPlay',
+  steps:[
+    {title:'第 1 步 · 备课：准备海量文章',
+     body:'训练的第一步不是「教知识」，是<b>收集文章</b>：书、网页、代码……近乎整个公开互联网。然后把文章挖空，变成亿道填空题。',
+     viz:'<div class="toks"><span class="tok">猫</span><span class="tok">吃</span><span class="tok hot">？</span><span class="arrow">←</span><span class="guess-note">这道题的答案是「鱼」</span></div><p class="guess-note">每一道题长这样：给出前文，<b>猜下一个词</b>。答案就藏在原文里，不用人标注——这叫自监督学习。</p>'},
+    {title:'第 2 步 · 切一切：文章变词块',
+     body:'模型不识字，它只认编号。文章先被切成<span class="term" data-term="token">词块 Token</span>，每个词块查表换成一个数字 ID，之后全是数学运算。',
+     viz:'<div class="toks"><span class="tok">猫 <span class="num" style="font-size:14px">#231</span></span><span class="tok">吃 <span class="num" style="font-size:14px">#587</span></span><span class="tok">鱼 <span class="num" style="font-size:14px">#104</span></span><span class="tok">。 <span class="num" style="font-size:14px">#3</span></span></div><p class="guess-note">「猫吃鱼。」→ [231, 587, 104, 3]。真实词表有几万到几十万个词块。</p>'},
+    {title:'第 3 步 · 考试：让它瞎猜一个',
+     body:'刚出厂的模型，旋钮全是随机数，纯属瞎猜。它给「猫 吃 _」的答案可能是「跑」，把握还低得可怜。',
+     viz:'<div class="toks"><span class="tok">猫</span><span class="tok">吃</span><span class="tok hot">跑？</span></div><p class="guess-note">它给「跑」的概率只有 <b>8%</b>，给正确答案「鱼」只有 3%——没关系，训练就是从满嘴胡话开始的。</p>'},
+    {title:'第 4 步 · 打分：错得有多离谱？',
+     body:'把它的猜测和正确答案一对，用<span class="term" data-term="loss">错题分数 Loss</span>量化：答案概率越低，分数越高、惩罚越重。',
+     viz:'<div class="loss-big">Loss = 3.5</div><p class="loss-label">错得很离谱（训好之后这个数会降到 0.1 以下）</p><p class="guess-note" style="text-align:center">Loss 就是一个数，但它同时也是后面所有调整的「总指挥」。</p>'},
+    {title:'第 5 步 · 分锅：每个旋钮该往哪拧？',
+     body:'用一种叫<span class="term" data-term="gradient">梯度</span>的算法（即反向传播），把这次的错<b>分摊回每一个旋钮</b>：每个旋钮都收到一张小纸条——往哪拧、拧多少，Loss 就会下降。',
+     viz:'<div class="toks" style="justify-content:center"><span class="tok hot">Loss 3.5</span></div><div style="text-align:center;font-size:26px;color:var(--orange)">↙ ↓ ↘</div><div class="toks" style="justify-content:center"><span class="tok">w₁ 该调大</span><span class="tok">w₂ 该调小</span><span class="tok">w₃ 几乎不动</span></div><p class="guess-note" style="text-align:center">一次反向传播，千亿个旋钮的纸条同时算完——这是深度学习最核心的魔法。</p>'},
+    {title:'第 6 步 · 动手：按纸条拧一下',
+     body:'按<span class="term" data-term="gradient">梯度</span>纸条，把每个旋钮挪一丁点（挪多少由<span class="term" data-term="lr">学习率</span>决定，下一节可以亲手调）。注意：只挪<b>一点点</b>，拧过头会越学越差。',
+     viz:knobViz},
+    {title:'第 7 步 · 重复亿万次：Loss 一路下降',
+     body:'换下一道题，重复第 3–6 步。<b>几万亿道题之后</b>，Loss 从 3.5 降到 0.1 附近——它再看到「猫 吃」，第一反应就是「鱼」。语言规律，就这样被压进了旋钮的位置里。',
+     viz:'<div class="toks"><span class="tok">猫</span><span class="tok">吃</span><span class="tok new">鱼 ✓</span></div><div class="loss-big" style="color:var(--green)">Loss = 0.12</div><p class="loss-label">训练完成的标准不是「背下答案」，而是没见过的句子也能接得对——叫泛化。</p>'}
+  ]
+});
+
+/* ================= 学习率模拟 ================= */
+(function(){
+  var range=document.getElementById('lrRange'), out=document.getElementById('lrOut'),
+      verdict=document.getElementById('lrVerdict'), svg=document.getElementById('lossChart');
+  var NS='http://www.w3.org/2000/svg', animTimer=null, currentSeries=[];
+  function simulate(lr){
+    var w=0, target=3, series=[], i, pred, loss;
+    for(i=0;i<30;i++){ pred=w*1; loss=Math.pow(pred-target,2); series.push(loss); w=w-lr*2*(w-target); if(!isFinite(w)||Math.abs(w)>1e6){series.push(50);break;} }
+    return series;
+  }
+  function draw(series, upto){
+    var W=420,H=300,pl=44,pr=14,pt=16,pb=32, iw=W-pl-pr, ih=H-pt-pb;
+    var maxV=10;
+    var s='<line class="axis" x1="'+pl+'" y1="'+pt+'" x2="'+pl+'" y2="'+(H-pb)+'"/><line class="axis" x1="'+pl+'" y1="'+(H-pb)+'" x2="'+(W-pr)+'" y2="'+(H-pb)+'"/>';
+    s+='<text x="6" y="'+(pt+4)+'">Loss</text><text x="'+(W-70)+'" y="'+(H-8)+'">轮次 →</text>';
+    [0,2.5,5,7.5,10].forEach(function(v){ var y=pt+ih-(v/maxV)*ih; s+='<text x="'+(pl-26)+'" y="'+(y+4)+'">'+v+'</text><line class="axis" x1="'+pl+'" y1="'+y+'" x2="'+(W-pr)+'" y2="'+y+'" opacity=".45"/>'; });
+    var pts=[], n=Math.min(upto,series.length);
+    for(var i=0;i<n;i++){ var x=pl+(i/29)*iw; var v=Math.min(series[i],maxV); var y=pt+ih-(v/maxV)*ih; pts.push(x.toFixed(1)+','+y.toFixed(1)); }
+    if(pts.length>1) s+='<polyline class="curve" points="'+pts.join(' ')+'"/>';
+    if(n>0){ var lx=pl+((n-1)/29)*iw, lv=Math.min(series[n-1],maxV), ly=pt+ih-(lv/maxV)*ih;
+      s+='<circle cx="'+lx+'" cy="'+ly+'" r="5" fill="var(--orange)"/><text x="'+Math.min(lx+8,W-92)+'" y="'+Math.max(ly-8,14)+'" style="font-size:13px;font-weight:700;fill:var(--orange)">Loss '+series[n-1].toFixed(2)+'</text>'; }
+    s+='<text x="'+pl+'" y="'+(H-8)+'">0</text><text x="'+(W-40)+'" y="'+(pt+4)+'">封顶 10</text>';
+    svg.innerHTML=s;
+  }
+  function judge(lr){
+    if(lr<0.05) return ['warn','🐢 步子太小：方向是对的，但 30 轮才挪了一点点。真实训练里这样烧的电费够买栋楼——慢，也是错。'];
+    if(lr<=0.6) return ['ok','✅ 步长合适：Loss 稳步下降、贴地收敛。这就是调参工程师想找到的「甜点区」。'];
+    if(lr<=0.95) return ['warn','😬 步子偏大：Loss 在正确答案附近来回震荡，能降但降不干净，模型精度会吃亏。'];
+    return ['bad','💥 步长过大：一步跨过头、下一步跨回来还更远——Loss 不降反升，训练直接「爆炸」（发散）。这时只能调小重来。'];
+  }
+  function refresh(run){
+    var lr=parseInt(range.value,10)/100;
+    out.textContent=lr.toFixed(2);
+    var j=judge(lr); verdict.className='lr-verdict '+j[0]; verdict.textContent=j[1];
+    currentSeries=simulate(lr);
+    if(animTimer){clearInterval(animTimer);animTimer=null;}
+    if(run){ var i=0; animTimer=setInterval(function(){ i++; draw(currentSeries,i); if(i>=currentSeries.length){clearInterval(animTimer);animTimer=null;} },70); }
+    else draw(currentSeries,currentSeries.length);
+  }
+  range.addEventListener('input',function(){refresh(false);});
+  document.getElementById('lrRun').addEventListener('click',function(){refresh(true);});
+  refresh(false);
+})();
+
+/* ================= 手算四格 ================= */
+(function(){
+  var cells=document.querySelectorAll('#calc4 .calc-cell'), timer=null;
+  document.getElementById('calcPlay').addEventListener('click',function(){
+    cells.forEach(function(c){c.classList.remove('on');});
+    if(timer)clearInterval(timer);
+    var i=0; timer=setInterval(function(){ if(i>0)cells[i-1].classList.remove('on'); if(i>=cells.length){clearInterval(timer);timer=null;return;} cells[i].classList.add('on'); i++; },900);
+  });
+  document.getElementById('calcReset').addEventListener('click',function(){ if(timer)clearInterval(timer); cells.forEach(function(c){c.classList.remove('on');}); });
+})();
+
+/* ================= 第二幕 推理 ================= */
+var embExplain={
+  '猫,0':'「猫」的坐标第 1 位 = 0.9：这一位大致编码「是不是动物」。数值是教学圆整的示意。',
+  '猫,1':'「猫」的坐标第 2 位 = 0.8：大致编码「体型大小」方向，猫偏小。',
+  '猫,2':'「猫」的坐标第 3 位 = 0.1：大致编码「是不是食物」——猫基本不能吃，所以很低。',
+  '猫,3':'「猫」的坐标第 4 位 = 0.6：大致编码「常见程度」。真实模型里每个词有几千到几万维坐标。',
+  '吃,0':'「吃」的坐标第 1 位 = 0.2：吃不是动物，所以这一位低。',
+  '吃,1':'「吃」的坐标第 2 位 = 0.5：动作类词在这一维居中。',
+  '吃,2':'「吃」的坐标第 3 位 = 0.9：「吃」和食物强相关，这一位很高。',
+  '吃,3':'「吃」的坐标第 4 位 = 0.7：非常常见的词。',
+  '鱼,0':'「鱼」的坐标第 1 位 = 0.85：鱼也是动物，和「猫」在这一维很接近。',
+  '鱼,1':'「鱼」的坐标第 2 位 = 0.75：体型偏小，和猫接近。',
+  '鱼,2':'「鱼」的坐标第 3 位 = 0.95：「鱼」是典型食物——这正是它能接在「吃」后面的数学原因。',
+  '鱼,3':'「鱼」的坐标第 4 位 = 0.55：常见程度中等。'
+};
+var embData=[['猫',[0.9,0.8,0.1,0.6]],['吃',[0.2,0.5,0.9,0.7]],['鱼',[0.85,0.75,0.95,0.55]]];
+var embHtml='<table class="mx"><tr><th></th><th>维度1</th><th>维度2</th><th>维度3</th><th>维度4</th></tr>'+
+  embData.map(function(r){ return '<tr><th>'+r[0]+'</th>'+r[1].map(function(v,j){return '<td class="cell" data-emb="'+r[0]+','+j+'">'+v.toFixed(2)+'</td>';}).join('')+'</tr>'; }).join('')+
+  '</table><div class="cell-explain" id="embExplain">👆 点任意一格，看这个数字是什么意思。<br>注意看：「猫」和「鱼」的数字长得很像——意思相近的词，<b>坐标也相近</b>。</div>';
+
+var attData=[[.8,.1,.1],[.2,.7,.1],[.3,.6,.1]];
+var attWords=['猫','吃','鱼'];
+var attHtml='<table class="mx"><tr><th>谁在看 ↓</th>'+attWords.map(function(w){return '<th>看 '+w+'</th>';}).join('')+'</tr>'+
+  attData.map(function(row,i){ return '<tr><th>'+attWords[i]+'</th>'+row.map(function(v,j){ var c=Math.round(7+v*90); return '<td class="cell heat" data-att="'+i+','+j+'" style="background:rgb('+(232)+','+(Math.round(93+v*40))+','+Math.round(4+v*30)+');opacity:'+(0.35+v*0.65)+'">'+Math.round(v*100)+'%</td>'; }).join('')+'</tr>'; }).join('')+
+  '</table><div class="cell-explain" id="attExplain">👆 点任意一格，看「谁在看谁」。颜色越深 = 越关注。<br>读法：每一<b>行</b>是一个词在分配自己的注意力，加起来 100%。</div>';
+
+function probBars(items){
+  return items.map(function(it,i){ return '<div class="prob-row'+(i===0?' top':'')+'"><span class="w">'+it[0]+'</span><span class="bar"><i style="width:'+it[1]+'%"></i></span><span class="p">'+it[1]+'%</span></div>'; }).join('');
+}
+var probHtml=probBars([['鱼',62],['饭',15],['猫',9],['跑',6],['其他几万个词',8]])+
+  '<p class="guess-note">这一步叫输出层：模型对词表里<b>每一个词</b>都打了分，再换算成概率。和训练时一模一样——只不过现在不许看答案了。</p>';
+
+var autoStep=0;
+makePlayer({
+  viz:'inferViz',dots:'inferDots',title:'inferTitle',body:'inferBody',prog:'inferProg',prev:'inferPrev',next:'inferNext',play:'inferPlay',
+  steps:[
+    {title:'第 1 步 · 分词：先把句子切开',
+     body:'和你聊天时也一样：你输入的每个字，先被切成<span class="term" data-term="token">词块 Token</span> 并换成编号，模型只处理数字。',
+     viz:'<div class="toks"><span class="tok">猫 <span class="num" style="font-size:14px">#231</span></span><span class="tok">吃 <span class="num" style="font-size:14px">#587</span></span><span class="tok dim">？ 待生成</span></div><p class="guess-note">输入只有两个词。任务：算出第 3 个词最可能是什么。</p>'},
+    {title:'第 2 步 · 变坐标：每个词一串数字',
+     body:'每个编号再查一张大表，换成一串数字——<span class="term" data-term="embedding">词的坐标 Embedding</span>。意思越相近的词，坐标越相近，模型用「距离」理解语义。',
+     viz:embHtml,
+     onShow:function(){
+       document.querySelectorAll('[data-emb]').forEach(function(td){ td.addEventListener('click',function(){ document.getElementById('embExplain').innerHTML='📌 <b>'+td.getAttribute('data-emb').split(',')[0]+'</b>：'+embExplain[td.getAttribute('data-emb')]; }); });
+     }},
+    {title:'第 3 步 · 互看一眼：谁在关注谁',
+     body:'每个词做决定之前，先按<span class="term" data-term="attention">注意力</span>扫一遍其他词：「吃」最关注「猫」（谁在吃？）和即将生成的位置——主语决定了菜单。',
+     viz:attHtml,
+     onShow:function(){
+       document.querySelectorAll('[data-att]').forEach(function(td){ td.addEventListener('click',function(){
+         var p=td.getAttribute('data-att').split(','), i=+p[0], j=+p[1];
+         var why={'猫,猫':'「猫」主要在确认自己：我是这句话的主语。','猫,吃':'「猫」对「吃」关注不多，它还没「经历」后面的事（模型只能看左边，这叫因果掩码）。','猫,鱼':'注意：排在前面的词看不到后面的词——生成时未来还不存在。','吃,猫':'关键一格！「吃」回头确认主语是「猫」，于是后面大概率接猫的食物，而不是人吃的饭。','吃,吃':'「吃」也在确认自己的动作身份。','吃,鱼':'这一格在真实生成时不存在（鱼还没生成）；这里是为了让你看清完整的关注关系示意。','鱼,猫':'「鱼」回看「猫」：确认自己是被吃的对象，语义自洽。','鱼,吃':'「鱼」最关注「吃」：正是这个动作决定了它出现在这里。','鱼,鱼':'「鱼」对自己的关注最低，因为它的身份主要由上下文决定。'};
+         document.getElementById('attExplain').innerHTML='📌 「<b>'+attWords[i]+'</b>」把 '+Math.round(attData[i][j]*100)+'% 的注意力给了「<b>'+attWords[j]+'</b>」。'+(why[attWords[i]+','+attWords[j]]||'');
+       }); });
+     }},
+    {title:'第 4 步 · 打分：每个候选词一个概率',
+     body:'经过几十层这样的计算，最后给词表里<b>每个词</b>打分、换算成概率。「鱼」以 62% 断层领先——因为主语是猫、动作是吃。',
+     viz:probHtml},
+    {title:'第 5 步 · 挑一个：不总是选第一名',
+     body:'按概率「抽签」挑一个词，这叫采样。挑多稳由<span class="term" data-term="temperature">温度</span>控制——本节下方可以亲手调温度、反复抽，感受输出如何变化。',
+     viz:'<div class="toks"><span class="tok">猫</span><span class="tok">吃</span><span class="tok hot">抽中：鱼 🎲</span></div><p class="guess-note">温度低时几乎必中「鱼」；温度拉高，「跑」「猫」这种低概率词也会偶尔被抽中——创意和胡说只有一线之隔。</p>'},
+    {title:'第 6 步 · 拼回去，再来一轮',
+     body:'把「鱼」拼回输入，变成「猫 吃 鱼」，<b>整个流程再跑一遍</b>猜第 4 个词——这次大概率是句号。如此<span class="term" data-term="autoregressive">逐词循环</span>，直到生成结束标记。这，就是推理的全部。',
+     viz:'<div class="toks" id="autoToks"><span class="tok">猫</span><span class="tok">吃</span><span class="tok new">鱼</span><span class="tok new">。</span></div><p class="guess-note">你在聊天软件里看到的流式输出，就是这个循环一轮蹦出一个词。每多生成一个词，就要多算一整遍——这也是长回答更贵、更慢的原因。</p>'}
+  ]
+});
+
+/* ================= 温度采样 ================= */
+(function(){
+  var words=[['鱼',62],['饭',15],['猫',9],['跑',6],['球',4],['觉',4]];
+  var range=document.getElementById('tempRange'), out=document.getElementById('tempOut'),
+      box=document.getElementById('tempProbs'), picked=document.getElementById('tempPicked');
+  function probs(t){
+    if(t<=0.01) return words.map(function(w,i){return i===0?100:0;});
+    var ex=words.map(function(w){return Math.exp(Math.log(w[1]/100)/t);});
+    var sum=ex.reduce(function(a,b){return a+b;},0);
+    return ex.map(function(v){return v/sum*100;});
+  }
+  function render(){
+    var t=parseInt(range.value,10)/100; out.textContent=t.toFixed(2).replace(/0$/,'');
+    var ps=probs(t);
+    box.innerHTML=words.map(function(w,i){ var p=ps[i]; return '<div class="prob-row'+(i===0?' top':'')+'"><span class="w">'+w[0]+'</span><span class="bar"><i style="width:'+Math.max(p,0.6)+'%"></i></span><span class="p">'+p.toFixed(1)+'%</span></div>'; }).join('');
+    return ps;
+  }
+  var curPs=render();
+  range.addEventListener('input',function(){curPs=render();picked.innerHTML='';});
+  document.getElementById('tempPick').addEventListener('click',function(){
+    var r=Math.random()*100, acc=0, chosen=words[0][0];
+    for(var i=0;i<words.length;i++){ acc+=curPs[i]; if(r<=acc){chosen=words[i][0];break;} }
+    picked.innerHTML='抽中了：<b>「'+chosen+'」</b>'+(chosen==='鱼'?' ——和预期一致。':' ——冷门词被抽中了！这就是高温的样子。');
+  });
+})();
+
+/* ================= 第三幕 Agent ================= */
+var agentMsgs=[
+  {role:'system',label:'SYSTEM · 系统设定',text:'你是一个生活助理。需要实时信息时，调用工具查询，不要编造。'},
+  {role:'user',label:'USER · 用户',text:'查一下明天上海的天气，下雨就提醒我带伞。'},
+  {role:'assistant',label:'ASSISTANT · 模型（决定调工具）',text:'<span class="mono">{"tool": "get_weather", "args": {"city": "上海", "date": "明天"}}</span><br>模型没有直接回答，而是按约定格式「点单」：要查天气。'},
+  {role:'tool',label:'TOOL · 天气工具返回（后端真调了 API）',text:'<span class="mono">{"city":"上海","date":"2026-11-04","weather":"中雨","temp":"14~19℃","rain_prob":"90%"}</span>'},
+  {role:'assistant',label:'ASSISTANT · 模型（读完结果，决定再调一个工具）',text:'查到了：明天中雨。用户说了「下雨就提醒」，条件成立——<span class="mono">{"tool": "set_reminder", "args": {"time": "明天 08:00", "text": "带伞"}}</span>'},
+  {role:'tool',label:'TOOL · 提醒工具返回',text:'<span class="mono">{"ok": true, "reminder_id": "r_1024"}</span> 提醒创建成功。'},
+  {role:'assistant',label:'ASSISTANT · 模型（给出最终答复）',text:'查好了：明天上海中雨，14~19℃，降雨概率 90%。已经帮你设好明早 8 点的带伞提醒。☂️'}
+];
+function ctxHtml(upto){
+  return agentMsgs.slice(0,upto).map(function(m){return '<div class="msg '+m.role+'"><span class="role">'+m.label+'</span>'+m.text+'</div>';}).join('');
+}
+/* Agent 用独立播放器：舞台是固定的上下文列表，只更新内容 */
+(function(){
+  var steps=[
+    {title:'第 0 圈 · 开场：先把「任务书」装好', msgs:2, tokens:120,
+     body:'循环开始前，你的后端先组装好上下文：<b>系统设定</b>（它是谁、能不能调工具）+ <b>用户这句话</b>。注意：模型没有记忆，每一轮都要把全部上下文重新发给它。',
+     weather:'待命', remind:'待命'},
+    {title:'第 1 圈 · 模型决定：先查天气', msgs:3, tokens:210,
+     body:'把上下文发给模型。它没有凭空编天气，而是输出一段约定好的 JSON——这就是 <span class="term" data-term="fc">Function Calling</span>：它在「点单」，执行权在你手里。',
+     weather:'待命', remind:'待命'},
+    {title:'第 1 圈 · 后端执行：真的去调 API', msgs:4, tokens:340,
+     body:'你的后端解析 JSON，<b>真的调用了天气 API</b>，拿到「中雨、降雨概率 90%」，再把结果作为一条 tool 消息<b>写回上下文</b>。模型这才「知道」了天气——知识来自你的代码，不是它本身。',
+     weather:'✓ 已执行：返回中雨 · 90%', remind:'待命'},
+    {title:'第 2 圈 · 模型再判断：条件成立，设定提醒', msgs:5, tokens:430,
+     body:'带着新上下文再调一次模型。它读到「下雨」+ 用户的「就提醒我」，判断条件成立，于是再点一次单：调用提醒工具。',
+     weather:'✓ 已执行：返回中雨 · 90%', remind:'待命'},
+    {title:'第 2 圈 · 后端执行：提醒建好，结果写回', msgs:6, tokens:480,
+     body:'后端执行提醒工具，把「创建成功」也写回上下文。现在上下文里事实齐全：天气查了、提醒设了。',
+     weather:'✓ 已执行：返回中雨 · 90%', remind:'✓ 已执行：明早 8:00 带伞'},
+    {title:'收尾 · 模型不再点单 = 任务结束', msgs:7, tokens:560,
+     body:'第三次调模型，它这次输出的是<b>纯文本答复</b>、没有点单——循环的退出条件触发，while 结束，把这句话返回给用户。整个过程：<b>模型动脑点单，你的代码动手干活</b>。',
+     weather:'✓ 已执行：返回中雨 · 90%', remind:'✓ 已执行：明早 8:00 带伞'}
+  ];
+  var cur=0, timer=null;
+  var dotsEl=document.getElementById('agentDots');
+  steps.forEach(function(_,i){ var d=document.createElement('i'); d.addEventListener('click',function(){stop();go(i);}); dotsEl.appendChild(d); });
+  function go(i){
+    cur=Math.max(0,Math.min(steps.length-1,i));
+    var s=steps[cur];
+    document.getElementById('agentTitle').textContent=s.title;
+    document.getElementById('agentBody').innerHTML=s.body;
+    document.getElementById('agentProg').textContent=(cur+1)+' / '+steps.length;
+    document.getElementById('ctxList').innerHTML=ctxHtml(s.msgs);
+    var pct=Math.max(3,Math.round(s.tokens/2000));
+    document.getElementById('ctxBarFill').style.width=pct+'%';
+    document.getElementById('ctxBarLabel').textContent='上下文：'+s.tokens+' / 200,000 tokens（示意上限）——每多一圈就变长一点，塞满的风险就是这么来的';
+    document.getElementById('toolWeatherSt').textContent='状态：'+s.weather;
+    document.getElementById('toolRemindSt').textContent='状态：'+s.remind;
+    document.getElementById('toolWeather').className='toolcard'+(s.weather.indexOf('✓')===0?' live':'');
+    document.getElementById('toolRemind').className='toolcard'+(s.remind.indexOf('✓')===0?' live':'');
+    var ds=dotsEl.children; for(var k=0;k<ds.length;k++) ds[k].className=(k<=cur?'on':'');
+    document.getElementById('agentPrev').disabled=(cur===0);
+    document.getElementById('agentNext').disabled=(cur===steps.length-1);
+  }
+  function stop(){ if(timer){clearInterval(timer);timer=null;document.getElementById('agentPlay').textContent='▶ 播放循环';} }
+  document.getElementById('agentPrev').addEventListener('click',function(){stop();go(cur-1);});
+  document.getElementById('agentNext').addEventListener('click',function(){stop();go(cur+1);});
+  document.getElementById('agentPlay').addEventListener('click',function(){
+    if(timer){stop();return;}
+    if(cur===steps.length-1) go(0);
+    document.getElementById('agentPlay').textContent='⏸ 暂停';
+    timer=setInterval(function(){ if(cur>=steps.length-1){stop();return;} go(cur+1); },2800);
+  });
+  go(0);
+})();
+
+/* ================= 每幕小测 ================= */
+var QUIZZES={
+  train:[
+    {q:'训练时，模型每做错一道填空题，程序会做什么？',opts:['把这道题的答案背下来存进数据库','按梯度把每个参数微调一点点','把出题的人换掉，重新出题'],ans:1,why:'训练不「存答案」，而是<b>拧旋钮</b>：算梯度 → 每个参数挪一点 → 换下一题。规律就是这样被压进参数里的。'},
+    {q:'学习率（步长）设得过大，最可能发生什么？',opts:['学得特别快，一次到位','Loss 来回震荡甚至越来越大（发散）','没有任何影响，只是费电'],ans:1,why:'步子太大就会<b>跨过最低点</b>，越拧越远。你在上面的滑杆实验里应该已经亲手「炸」过一次了。'},
+    {q:'作为普通开发者，你最可能参与的「训练」是？',opts:['花几千万美元从零训练一个大模型','在现成模型上微调，或直接调 API','手写反向传播算法'],ans:1,why:'从零训练是少数大厂核心团队的事；<b>微调 + 调 API + 提示词</b>才是绝大多数开发者的日常。'}
+  ],
+  infer:[
+    {q:'模型生成长回答时，为什么是一个词一个词往外蹦？',opts:['网络太慢，只能分段传','生成方式就是：猜一个词 → 拼回去 → 再猜下一个（自回归）','为了让用户有时间阅读'],ans:1,why:'这叫<b>自回归生成</b>：每一步都要等上一步的结果，所以天然逐词产出，前端才需要流式渲染。'},
+    {q:'把温度（Temperature）调高，输出会怎么变？',opts:['更严谨、更一致','更发散，冷门词也会被选中，创意与胡说一起变多','回答速度变快'],ans:1,why:'温度改变的是<b>抽签的概率分布</b>：高温把低概率词的机会放大了。写代码用低温，头脑风暴可以用高温。'},
+    {q:'API 为什么按 token 计费？',opts:['因为字数好统计，仅此而已','每生成一个词都要把整个模型算一遍，算力正比于 token 数','行业惯例，没有技术原因'],ans:1,why:'推理成本来自<b>逐词的重复计算</b>：输入越长、输出越长，算的次数越多，账单和延迟都随之增长。'}
+  ],
+  agent:[
+    {q:'Agent 里真正去调用天气 API 的是谁？',opts:['大模型自己联网查的','你写的后端代码——模型只是输出了想调用的 JSON','用户的浏览器'],ans:1,why:'模型只有<b>建议权</b>：它按 Function Calling 格式「点单」，你的后端解析后真正执行，再把结果写回上下文。'},
+    {q:'模型每轮对话都「记得」之前聊了什么，靠的是什么？',opts:['模型有长期记忆数据库','你的后端每轮把完整上下文列表重新发给它','模型厂商在后台保存了会话'],ans:1,why:'模型本身<b>无状态</b>：所谓记忆，是你的代码把历史消息拼在上下文里、每轮重发一遍——这也是上下文会塞满的原因。'},
+    {q:'防止 Agent 无限循环烧钱，最直接的办法是？',opts:['换一个更聪明的模型','在 while 循环里设最大轮数，超了强制停','给模型写一句「不要死循环」的提示词'],ans:1,why:'提示词是软约束，<b>最大轮数是硬保险</b>：Agent 后端是你的代码，刹车必须装在代码里。'}
+  ]
+};
+document.querySelectorAll('.quiz').forEach(function(box){
+  var key=box.getAttribute('data-quiz'), qs=QUIZZES[key];
+  var html='<h3 style="font-size:19px;font-weight:800">🧪 本幕小测 · 点一点，立刻知道对错</h3>';
+  qs.forEach(function(item,qi){
+    html+='<div class="q"><p class="qq">'+(qi+1)+'. '+item.q+'</p><div class="opts">'+
+      item.opts.map(function(o,oi){return '<button class="opt" data-q="'+qi+'" data-o="'+oi+'">'+o+'</button>';}).join('')+
+      '</div><div class="why" id="why-'+key+'-'+qi+'">'+item.why+'</div></div>';
+  });
+  box.innerHTML=html;
+  box.querySelectorAll('.opt').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var qi=+btn.getAttribute('data-q'), oi=+btn.getAttribute('data-o'), item=qs[qi];
+      var qEl=btn.closest('.q');
+      qEl.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right','wrong'); });
+      if(oi===item.ans){ btn.classList.add('right'); }
+      else{ btn.classList.add('wrong'); qEl.querySelectorAll('.opt')[item.ans].classList.add('right'); }
+      document.getElementById('why-'+key+'-'+qi).classList.add('show');
+    });
+  });
+});
+</script>
+</body>
+</html>
