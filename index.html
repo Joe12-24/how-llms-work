@@ -226,6 +226,83 @@ pre.code .cm{color:#7fb3d9}
 .scale p{margin:4px 0 0;font-size:14.5px;color:#a9c6e2}
 .foot{margin-top:64px;border-top:1px solid var(--line);padding-top:20px;color:var(--muted);font-size:14.5px}
 .note{font-size:13.5px;color:var(--muted)}
+
+/* ===== 进阶模式 ===== */
+.adv{display:none}
+body.adv-on .adv{display:block}
+.adv{border:2px dashed var(--orange);border-radius:var(--radius);background:var(--panel);padding:20px;margin-top:18px}
+.adv .adv-badge{display:inline-block;background:var(--orange);color:#fff;font-size:12.5px;font-weight:800;border-radius:99px;padding:2px 10px;letter-spacing:.06em;margin-bottom:8px}
+.adv h3{font-size:19px;font-weight:800;margin-bottom:8px}
+.switchbtn{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 12px;font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer}
+.switchbtn .track{width:36px;height:20px;border-radius:99px;background:var(--line);position:relative;transition:background .25s;flex:none}
+.switchbtn .track::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .25s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+body.adv-on .switchbtn .track{background:var(--orange)}
+body.adv-on .switchbtn .track::after{left:18px}
+body.adv-on .switchbtn{border-color:var(--orange);color:var(--orange)}
+
+/* ===== 地基实验室 ===== */
+.pxboard{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;max-width:340px;margin:0 auto}
+.pxboard i{aspect-ratio:1;border-radius:4px;background:var(--panel2);border:1px solid var(--line);cursor:crosshair;touch-action:none}
+.pxboard i.l1{background:#9ec7e8}.pxboard i.l2{background:#4d8fc4}.pxboard i.l3{background:#0b5cad}
+@media (prefers-color-scheme: dark){.pxboard i.l1{background:#2b4d73}.pxboard i.l2{background:#3f74a8}.pxboard i.l3{background:#7db8e8}}
+.presetrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:12px}
+.flowstages{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin:14px 0}
+.fstage{flex:1;min-width:130px;border:2px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel);transition:all .3s}
+.fstage.on{border-color:var(--orange);background:var(--orange-soft)}
+.fstage .ft{font-weight:800;font-size:15px}
+.fstage .fb{font-size:13.5px;color:var(--muted)}
+.farrow{align-self:center;font-size:20px;color:var(--muted)}
+.outbars{display:flex;flex-direction:column;gap:5px}
+.outbar{display:grid;grid-template-columns:26px 1fr 58px;gap:8px;align-items:center}
+.outbar .d{font-weight:900;font-size:16px;text-align:center}
+.outbar .bar{height:16px;background:var(--panel2);border-radius:5px;overflow:hidden}
+.outbar .bar i{display:block;height:100%;background:var(--cyan);width:0;transition:width .7s}
+.outbar.win .bar i{background:var(--orange)}
+.outbar .p{font-family:ui-monospace,monospace;font-size:13.5px;text-align:right}
+.verdict{margin-top:10px;font-weight:700;border-radius:10px;padding:9px 13px;font-size:15.5px}
+.verdict.ok{background:var(--green-soft);color:var(--green)}
+.verdict.bad{background:var(--red-soft);color:var(--red)}
+.heatgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;max-width:300px;margin:0 auto}
+.heatgrid i{aspect-ratio:1;border-radius:4px}
+.seg{display:inline-flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:none;background:var(--panel);color:var(--ink);font-family:inherit;font-weight:700;font-size:15px;padding:8px 13px;cursor:pointer;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--blue);color:#fff}
+.plab{border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:14px;background:var(--panel)}
+.plab h4{margin:0 0 6px;font-size:16.5px}
+.plab .acc{font-size:30px;font-weight:900;color:var(--orange);font-family:ui-monospace,monospace}
+.plab .bar{height:20px;background:var(--panel2);border-radius:6px;overflow:hidden;margin:8px 0}
+.plab .bar i{display:block;height:100%;background:var(--cyan);transition:width .5s}
+.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:860px){.mini-grid{grid-template-columns:1fr}}
+.mini{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--panel)}
+.mini h4{margin:0 0 8px;font-size:16.5px}
+.mini .f{font-family:ui-monospace,monospace;font-size:15px;line-height:1.9}
+.mini p{margin:6px 0 0;font-size:14.5px;color:var(--muted)}
+table.oldnew{width:100%;border-collapse:collapse;font-size:15px}
+table.oldnew th,table.oldnew td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+table.oldnew th{background:var(--panel2);font-size:14.5px}
+table.oldnew td b{color:var(--orange)}
+.oldnew-wrap{overflow-x:auto;margin-top:12px}
+.logbar-row{display:grid;grid-template-columns:150px 1fr 110px;gap:10px;align-items:center;margin:8px 0;font-size:14.5px}
+@media(max-width:560px){.logbar-row{grid-template-columns:96px 1fr 86px;font-size:13px}}
+.logbar{height:20px;background:var(--panel2);border-radius:6px;overflow:hidden}
+.logbar i{display:block;height:100%;background:var(--blue)}
+.logbar.hot i{background:var(--orange)}
+.bridge{margin-top:18px;border:2px solid var(--blue);border-radius:var(--radius);padding:18px 20px;background:var(--cyan-soft);font-size:17px}
+.bridge b{color:var(--blue)}
+svg.scatter{width:100%;height:auto;display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+svg.scatter text{font-size:14px;font-weight:700;fill:var(--ink)}
+svg.scatter .pt{cursor:pointer}
+.qkv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:10px}
+@media(max-width:860px){.qkv-grid{grid-template-columns:1fr}}
+.qkv{border:1.5px solid var(--line);border-radius:12px;padding:14px}
+.qkv .big{font-size:22px;font-weight:900;color:var(--orange);font-family:ui-monospace,monospace}
+.loss-table{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+@media(max-width:860px){.loss-table{grid-template-columns:1fr}}
+.loss-cell{border:1.5px solid var(--line);border-radius:12px;padding:13px;text-align:center}
+.loss-cell .p{font-family:ui-monospace,monospace;font-weight:700}
+.loss-cell .l{font-size:26px;font-weight:900;color:var(--orange);font-family:ui-monospace,monospace}
 </style>
 </head>
 <body>
@@ -235,7 +312,9 @@ pre.code .cm{color:#7fb3d9}
   <a href="#intro">0 · 直觉</a>
   <a href="#training">第一幕 · 训练</a>
   <a href="#inference">第二幕 · 推理</a>
+  <a href="#lab">地基 · 手写数字</a>
   <a href="#agent">第三幕 · Agent</a>
+  <button class="switchbtn" id="advToggle" role="switch" aria-checked="false"><span class="track"></span>进阶模式</button>
 </div></nav>
 
 <div class="wrap">
@@ -245,7 +324,7 @@ pre.code .cm{color:#7fb3d9}
   <div class="kicker">给 0 基础的你 · 也给写前后端 / Agent 的你</div>
   <h1>大模型，只做一件事：<span class="hl">猜下一个词</span></h1>
   <p class="lead">ChatGPT 们看起来无所不知，内核却简单得惊人：给它一串词，它算出<b>下一个词最可能是什么</b>，拼上去，再猜下一个。训练、推理、Agent 三幕，全是这一件事的不同侧面。</p>
-  <p class="lead">全站只用两个例子：<b>「猫 吃 鱼」</b>讲训练与推理；<b>「查明天上海天气」</b>讲 Agent。带虚线下划的词都可以点开看人话解释。</p>
+  <p class="lead">全站只用两个例子：<b>「猫 吃 鱼」</b>讲训练与推理；<b>「查明天上海天气」</b>讲 Agent。带虚线下划的词都可以点开看人话解释。觉得接龙讲得太浅？先去下面的<b>地基实验室</b>亲手训一台认数字的小网络，再打开右上角<b>进阶模式</b>，Loss、词向量、Q/K/V 都会展开讲。</p>
 </header>
 
 <section class="act" style="margin-top:28px">
@@ -259,6 +338,155 @@ pre.code .cm{color:#7fb3d9}
       <span class="note">每点一次，它只猜一个词，然后把新词拼回句子、再猜下一个——这就叫<span class="term" data-term="autoregressive">逐词往外蹦 <small>自回归</small></span>。</span>
     </div>
   </div>
+</section>
+
+<!-- ============ 地基实验室 手写数字 ============ -->
+<section class="act" id="lab">
+  <div class="act-head">
+    <div class="act-no" style="background:var(--orange)">基</div>
+    <div>
+      <h2>地基实验室 · 先亲手训一台「认数字」的机器</h2>
+      <p>大模型那套东西——矩阵、误差、梯度下降、调参——全是从这一台小网络长出来的。本章按 Tariq Rashid《Python 神经网络编程》的路子走：不用任何框架，手写一个三层神经网络认手写数字（MNIST）。先在这里把地基摸到手，后面三幕只是把它放大。</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>A · 识别演示：给它一张图，看它怎么认</h3>
+    <p style="color:var(--muted);margin-top:0">选一张预置图，或者直接在格子上涂一个数字（按住拖动涂抹，右键/长按擦除），再点「开始识别」。预置的两张加噪图是原书第 3 章的真实案例：加了噪点的「3」它还认得出，加噪的「6」它<b style="color:var(--ink)">认错了</b>——失败也是教材。</p>
+    <div class="grid2" style="grid-template-columns:1fr 1.2fr">
+      <div>
+        <div class="presetrow">
+          <button class="btn ghost sm" data-preset="clean3">干净的 3</button>
+          <button class="btn ghost sm" data-preset="noisy3">加噪的 3（原书案例）</button>
+          <button class="btn ghost sm" data-preset="noisy6">加噪的 6（原书案例）</button>
+          <button class="btn ghost sm" id="labClear">清空手绘</button>
+        </div>
+        <div class="pxboard" id="pxBoard" aria-label="10 乘 10 手绘像素格"></div>
+        <p class="note" style="text-align:center;margin-top:8px">教学像素格 10×10（原书用的是 28×28）。涂得越满，像素值越大。</p>
+      </div>
+      <div>
+        <div class="btnrow"><button class="btn orange" id="labRun">▶ 开始识别</button><span class="note" id="labHint">先选一张图或画一个数字。</span></div>
+        <div class="flowstages">
+          <div class="fstage" id="fs1"><div class="ft">① 摊平 + 缩放</div><div class="fb" id="fs1Body">图像摊成一列数字，每个像素按 输入 = 像素/255×0.99 + 0.01 缩到 0.01~0.99。</div></div>
+          <div class="farrow">→</div>
+          <div class="fstage" id="fs2"><div class="ft">② 信号往前传</div><div class="fb">输入 × 权重矩阵 W₁ → 隐藏层，再 × W₂ → 输出层。每一步都是一次<span class="term" data-term="dot">点积 <small>矩阵乘法</small></span>。</div></div>
+          <div class="farrow">→</div>
+          <div class="fstage" id="fs3"><div class="ft">③ 读输出层</div><div class="fb">10 个输出节点各报一个 0~1 的数，谁最大就认成谁。</div></div>
+        </div>
+        <div class="outbars" id="labOut"></div>
+        <div class="verdict ok" id="labVerdict" style="display:none"></div>
+      </div>
+    </div>
+    <p class="note" style="margin-bottom:0">为什么不用 0 和 1 缩放？输入为 0 会让那条连接「学不到东西」，目标用 1.0 又会把权重逼得过大、把 <span class="term" data-term="sigmoid">sigmoid</span> 推到饱和区——所以原书统一用 0.01~0.99，这就是一种<span class="term" data-term="norm">归一化</span>。诚实标注：本页识别用「原型权重」模拟训练后的权重矩阵（原理与原书相同、数值非原书训练原值），对手绘图不宣称真实准确率；原书完整网络在 MNIST 测试集上的真实成绩约 95%（见下方参数实验室，均为原书实测）。</p>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>B · 打开黑盒：每个输出节点「期待看到」的数字长什么样</h3>
+    <p style="color:var(--muted);margin-top:0">原书 3.2 节有个漂亮实验：把信号<b style="color:var(--ink)">反着</b>喂回去（向后查询），就能画出每个输出节点心心念念的图案。点数字切换看看——这些「模板」不是谁画给它的，是训练把知识揉进权重矩阵之后自然长成的。</p>
+    <div class="presetrow" id="heatBtns"></div>
+    <div class="heatgrid" id="heatGrid"></div>
+    <p style="color:var(--muted);margin-bottom:0">两句要点：① 网络的「知识」不在某个节点里，而是<b style="color:var(--ink)">分布在全部权重</b>里；② 正因为这样，删掉一些节点、坏掉一些连接，它也只是变笨一点、不会整个崩掉——这种抗造的性质叫<b style="color:var(--ink)">弹性（鲁棒性）</b>，大脑也一样。</p>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>C · 参数实验室：原书真刀真枪调出来的四组实验</h3>
+    <p style="color:var(--muted);margin-top:0">下面每个数字都是原书在 MNIST 上跑出来的<b style="color:var(--ink)">实测成绩（测试集准确率）</b>，拨一拨，看看参数是怎么影响一台网络的。先顺手算一笔账：原书网络 784 输入 → 200 隐藏 → 10 输出，权重总数 = 784×200 + 200×10 = <b style="color:var(--ink)">158,800 个</b>（原书网络不带偏置）——这 15 万多个数，就是它「学到的全部知识」。</p>
+
+    <div class="plab">
+      <h4>实验 1 · <span class="term" data-term="lr">学习率</span>：下山的步子迈多大</h4>
+      <div class="seg" id="lrSeg">
+        <button data-lr="0">0.01</button><button data-lr="1" class="on">0.1</button><button data-lr="2">0.2</button><button data-lr="3">0.3</button><button data-lr="4">0.6</button>
+      </div>
+      <div style="display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin-top:8px"><span class="acc" id="lrAcc">95.23%</span><span class="note">原书实测</span></div>
+      <div class="bar"><i id="lrBar" style="width:95.23%"></i></div>
+      <p style="margin:0;color:var(--muted)" id="lrText">甜点区：步子稳，成绩好。原书最终选了这一档附近。</p>
+    </div>
+
+    <div class="plab">
+      <h4>实验 2 · 训练<span class="term" data-term="epoch">世代 Epoch</span>：同一批题反复刷几遍</h4>
+      <div class="slider-block" style="margin-top:6px">
+        <label>世代数 <output id="epOut">5</output></label>
+        <input type="range" id="epRange" min="1" max="7" value="5" step="1">
+      </div>
+      <svg class="chart" id="epChart" viewBox="0 0 420 190" role="img" aria-label="世代数与准确率折线图"></svg>
+      <p style="margin:6px 0 0;color:var(--muted)" id="epText"></p>
+      <p class="note" style="margin-bottom:0">注意第 6 世代那个莫名其妙的回落点——原书特意保留了它，并提醒：学习是个<b>随机过程</b>，梯度下降可能卡在<span class="term" data-term="localmin">局部最小值</span>附近。甜蜜点之后还硬练，成绩反而降，那叫<span class="term" data-term="overfit">过拟合</span>：把训练题背死了，遇到新题反而不会。再把学习率降到 0.1 慢慢多练，原书峰值到过 <b>96.89%</b>。</p>
+    </div>
+
+    <div class="plab">
+      <h4>实验 3 · 隐藏节点数：脑容量要多大</h4>
+      <div class="seg" id="hidSeg">
+        <button data-h="0">5</button><button data-h="1">10</button><button data-h="2">100</button><button data-h="3" class="on">200</button><button data-h="4">500</button>
+      </div>
+      <div style="display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin-top:8px"><span class="acc" id="hidAcc">97.51%</span><span class="note">原书实测</span></div>
+      <div class="bar"><i id="hidBar" style="width:97.51%"></i></div>
+      <p style="margin:0;color:var(--muted)" id="hidText"></p>
+      <p class="note" style="margin-bottom:0">原书的比喻：隐藏层太小，就像让一辆 5 座车去载 10 个人——不是司机技术问题，是<b>学习容量</b>根本不够。但节点也不是白来的：每个隐藏节点都要多算 784+10 个权重，节点越多、算得越慢，这就是容量与成本的权衡。</p>
+    </div>
+
+    <div class="plab">
+      <h4>实验 4 · 数据增强：把训练图拧歪一点，造新数据（原书 3.3）</h4>
+      <div class="btnrow">
+        <button class="switchbtn" id="augToggle" role="switch" aria-checked="false"><span class="track"></span>旋转增强 ±10°</button>
+        <span class="note">原书做法：每张训练图再随机旋转 ±10° 生成新样本，等于凭空多出一批「没见过的新题」。</span>
+      </div>
+      <div style="display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;margin-top:8px"><span class="acc" id="augAcc">95.4%</span><span class="note">原书实测（学习率 0.1、1 世代）</span></div>
+      <div class="bar"><i id="augBar" style="width:95.4%"></i></div>
+      <p style="margin:0;color:var(--muted)" id="augText">未开启：只用原始 6 万张训练图。</p>
+    </div>
+  </div>
+
+  <div class="mini-grid">
+    <div class="mini">
+      <h4>小灶 ① · 矩阵乘法 = 信号传递</h4>
+      <div class="f">输入 x = [1.0, 0.5]<br>h₁ = 1.0×0.9 + 0.5×0.3 = 1.05<br>h₂ = 1.0×0.2 + 0.5×0.8 = 0.60</div>
+      <p>仿原书 1.9 的小例子（教学简化值）：下一层每个节点的输入，就是上一层信号按权重加权求和。矩阵乘法只是把这一大堆乘加写得紧凑一点，没别的魔法。</p>
+    </div>
+    <div class="mini">
+      <h4>小灶 ② · 这台网络的「误差」是什么</h4>
+      <div class="f">目标 0.99，实际输出 0.30<br>误差 = 目标 − 输出 = 0.69<br>平方误差 = 0.69² ≈ 0.476</div>
+      <p>先有「差了多少」这个数，训练才有方向。平方是为了让正负误差不抵消、且差得越大罚得越重——它就是这台小网络的 <span class="term" data-term="loss">Loss</span>。</p>
+    </div>
+    <div class="mini">
+      <h4>小灶 ③ · 一个权重是怎么被改的</h4>
+      <div class="f">① 输出误差 0.69<br>② 按权重占比分摊：这条连接占 1/3 → 分到 0.23<br>③ × 学习率 0.2 × 上游信号 0.9 → 调整 ≈ +0.041<br>④ w：0.40 → 0.44</div>
+      <p>把误差沿着连接、按权重比例往回分摊再更新，就是<span class="term" data-term="backprop">反向传播</span>（原书 1.14/1.15 的讲法）。千亿参数的大模型，改每个权重的动作和这四步一模一样。</p>
+    </div>
+    <div class="mini">
+      <h4>小灶 ④ · sigmoid：把任意大的数挤进 0~1</h4>
+      <svg class="chart" id="sigChart" viewBox="0 0 420 170" role="img" aria-label="sigmoid 曲线" style="margin-bottom:6px"></svg>
+      <div class="slider-block" style="margin-top:0">
+        <label>输入 x <output id="sigOut">x = 0 → σ(x) = 0.50</output></label>
+        <input type="range" id="sigRange" min="-80" max="80" value="0">
+      </div>
+      <p>每个节点的输出都要过一道 <span class="term" data-term="sigmoid">sigmoid</span>：数再大也压不到 1 以上、再小也压不到 0 以下。代价是两头被压平时梯度几乎为 0——记住这一点，新老对照里马上用到。</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:18px">
+    <h3>E · 新老对照：2016 年的小网络 → 今天的大模型</h3>
+    <p style="color:var(--muted);margin-top:0">左边是原书这台网络的做法，右边是现在主流大模型的做法。变的都是零件，骨架还是那副骨架。</p>
+    <div class="oldnew-wrap"><table class="oldnew">
+      <tr><th style="width:24%">环节</th><th style="width:36%">原书（2016）做法</th><th>现在的做法</th></tr>
+      <tr><td><b>误差怎么算</b></td><td>平方误差（目标 − 输出）²</td><td><b>交叉熵 + Softmax</b>：分类/接龙任务的标准答案，大模型训练用的就是它（训练幕进阶节细讲）</td></tr>
+      <tr><td><b>怎么下山</b></td><td>普通梯度下降，学习率靠手调</td><td><b>Adam / AdamW</b>：给每个参数自动配步长，外加学习率调度——先 warmup 热身、再慢慢衰减</td></tr>
+      <tr><td><b>挤压函数</b></td><td>sigmoid</td><td><b>ReLU / GELU</b>：sigmoid 两头太平、梯度越传越小（梯度消失），新函数让深层网络训得动</td></tr>
+      <tr><td><b>梯度谁来算</b></td><td>手推权重更新公式</td><td><b>PyTorch / JAX 自动微分</b>：你只写前向计算，梯度框架替你算——小灶 ③ 那四步被自动化了</td></tr>
+      <tr><td><b>规模</b></td><td>3 层全连接，158,800 个参数</td><td><b>Transformer</b>，参数千亿级（见下方对比条）</td></tr>
+      <tr><td><b>数据与算力</b></td><td>MNIST 6 万张图，普通电脑几分钟</td><td>万亿级 token，GPU 集群跑数周到数月</td></tr>
+      <tr><td><b>防饱和</b></td><td>输入手动缩放 0.01~0.99</td><td><b>LayerNorm 等内建归一化</b>：每一层自动把信号拉回正常范围，不用再手动缩放</td></tr>
+      <tr><td><b>造数据 / 防背题</b></td><td>旋转图像造新样本</td><td>现代<b>数据增强</b>全家桶 + <b>Dropout / 权重衰减</b>，专门对付过拟合</td></tr>
+    </table></div>
+    <div style="margin-top:14px">
+      <div class="logbar-row"><span>原书小网络</span><div class="logbar"><i style="width:46%"></i></div><span class="num">158,800</span></div>
+      <div class="logbar-row"><span>大模型（量级）</span><div class="logbar hot"><i style="width:100%"></i></div><span class="num">≈ 1,000 亿+</span></div>
+      <p class="note" style="margin:0">参数量对比（对数刻度）：不是同一个网络变大了一点，是大了约一百万倍——但每个参数的更新，仍然是小灶 ③ 那四步。</p>
+    </div>
+  </div>
+
+  <div class="bridge"><b>桥句：</b>矩阵、误差、梯度下降、调参——这套东西一件都不会少，下一幕训练大模型全在，只是规模放大了约一百万倍，外加一个新零件：注意力。往下走。</div>
+
+  <div class="quiz" id="labQuiz"></div>
 </section>
 
 <!-- ============ 第一幕 训练 ============ -->
@@ -316,6 +544,23 @@ pre.code .cm{color:#7fb3d9}
       <div class="calc-cell"><span class="n">4</span><div class="f">拧一下（步长 0.1）</div><div class="f num">w = 0.5 − 0.1×(−8) = 1.3</div><p>新预测 = 2×1.3 = 2.6，已经很接近 3 了。再来几轮就几乎不差。</p></div>
     </div>
     <div class="btnrow" style="margin-top:14px"><button class="btn sm" id="calcPlay">▶ 一步步算</button><button class="btn ghost sm" id="calcReset">重置</button></div>
+  </div>
+
+  <div class="adv" id="advLoss">
+    <span class="adv-badge">进阶 · 已开启</span>
+    <h3>Loss 到底从哪来？从「平方误差」到「交叉熵」</h3>
+    <p style="color:var(--muted);margin-top:0">地基实验室里，那台小网络的误差是<b style="color:var(--ink)">平方误差</b>：（目标 − 输出）²——先有「差多少」，才有梯度，才有更新。到了接龙这件事，输出不再是一个数，而是<b style="color:var(--ink)">给几万个候选词的概率分布</b>（鱼 62%、饭 15%…），正确答案只有一个。这时衡量「错得多狠」要换一把尺：<span class="term" data-term="xent">交叉熵</span> Loss = <b style="color:var(--ink)">−log（正确词的概率）</b>。</p>
+    <div class="slider-block">
+      <label>模型给正确词的概率 p <output id="ceOut">p = 0.62 → Loss = 0.48</output></label>
+      <input type="range" id="ceRange" min="1" max="99" value="62">
+    </div>
+    <div class="loss-table">
+      <div class="loss-cell"><div class="p">p = 0.62（挺自信，还对了）</div><div class="l">0.48</div><p class="note" style="margin:0">小罚。</p></div>
+      <div class="loss-cell"><div class="p">p = 0.10（基本没当回事）</div><div class="l">2.30</div><p class="note" style="margin:0">重罚。</p></div>
+      <div class="loss-cell"><div class="p">p = 0.01（几乎判了死刑）</div><div class="l">4.61</div><p class="note" style="margin:0">概率越接近 0，罚分涨得越凶——这就是 −log 的脾气。</p></div>
+    </div>
+    <p style="color:var(--muted)">所以 Loss 不是「答对了几道题」，而是<b style="color:var(--ink)">模型有多意外</b>：正确答案越出乎它意料，罚得越重。把整个训练集的平均 Loss 换算一下，就是常听到的<span class="term" data-term="ppl">困惑度 Perplexity</span>——粗略理解成「模型每一步平均在多少个候选词之间纠结」。</p>
+    <p style="color:var(--muted);margin-bottom:0">闭环看一次：同一道题「猫 吃 _」，更新前它只给「鱼」10% → Loss 2.30；按梯度拧完一轮旋钮，再算：给到 45% → Loss 0.80；再一轮：62% → Loss 0.48。<b style="color:var(--ink)">Loss 变小，就是「学会了」的可测量版本。</b>概率分布怎么来的？输出层先给每个词一个原始分数，再过一道 <span class="term" data-term="softmax">Softmax</span> 把分数变成加起来等于 1 的概率。</p>
   </div>
 
   <div class="scale-row">
@@ -384,6 +629,27 @@ pre.code .cm{color:#7fb3d9}
     </div>
   </div>
 
+  <div class="adv" id="advEmbed">
+    <span class="adv-badge">进阶 · 已开启</span>
+    <h3>词向量到底是什么？每个词，都是空间里的一个点</h3>
+    <p style="color:var(--muted);margin-top:0">第 2 步那张小矩阵只是 4 维示意。真实模型里，每个词是一串几千维的坐标（量级如 <b style="color:var(--ink)">4096 维</b>）——你可以把它想成词在「意义空间」里的位置：<b style="color:var(--ink)">意思近 = 位置近</b>。下面把空间压扁成 2D 投影示意，点任意一个词看看。</p>
+    <svg class="scatter" id="embScatter" viewBox="0 0 460 300" role="img" aria-label="词向量二维语义地图"></svg>
+    <div class="cell-explain" id="scatterExplain">👆 点一个词。注意三件事：近义词自己聚成一团；「国王 − 男人 + 女人」的箭头落点几乎正中「王后」；这些位置<b>不是人编的</b>，是训练时被语料一点点摆出来的。</div>
+    <p style="color:var(--muted);margin-bottom:0">还有个小补丁：光有词义没有顺序，「猫吃鱼」和「鱼吃猫」就分不清了。所以模型还会给每个位置再加一个「座位号」（<span class="term" data-term="posenc">位置编码</span>）：词义坐标 + 座位号，一起往下传。</p>
+  </div>
+
+  <div class="adv" id="advQKV">
+    <span class="adv-badge">进阶 · 已开启</span>
+    <h3>注意力拆开看：Q / K / V 三件套</h3>
+    <p style="color:var(--muted);margin-top:0">第 3 步的热力图背后，每个词其实随身带了三样东西。拿「吃」回头看「猫」举例：</p>
+    <div class="qkv-grid">
+      <div class="qkv"><div class="big">Q · 提问</div><p style="margin:4px 0 0;color:var(--muted)">「我想找什么」——「吃」的 Q 在问：谁在吃我？吃的是什么？</p></div>
+      <div class="qkv"><div class="big">K · 标签</div><p style="margin:4px 0 0;color:var(--muted)">「我是什么」——每个词亮出自己的标签，等着被别人的 Q 匹配。</p></div>
+      <div class="qkv"><div class="big">V · 内容</div><p style="margin:4px 0 0;color:var(--muted)">「我能提供的信息」——匹配上之后，真正被搬走汇总的是 V。</p></div>
+    </div>
+    <p style="color:var(--muted);margin-bottom:0">算账方式：「吃」的 Q 逐个和每个词的 K 做<span class="term" data-term="dot">点积</span>打分（点积 = 两个向量方向有多一致，一致越高分越高），分数过一道 <span class="term" data-term="softmax">Softmax</span> 变成加起来 100% 的注意力权重，再按权重把各词的 V 加权汇总。真实模型还会并行开几十个这样的「注意力头」，各盯一种关系（主谓、指代、远近…），这叫多头注意力。</p>
+  </div>
+
   <div class="devbox">
     <h3>给开发者的落点 · 推理这一幕和你有什么关系？</h3>
     <ul>
@@ -391,6 +657,28 @@ pre.code .cm{color:#7fb3d9}
       <li><b>为什么要流式输出</b>：逐词生成天然是一个一个往外蹦的，等全部生成完再返回，用户要盯着白屏好几秒——所以前端用流式（SSE / WebSocket）接一个渲染一个。</li>
       <li><span class="term" data-term="kvcache">备忘录 <small>KV Cache</small></span>：已经算过的词的结果会被缓存复用，不必每步从头重算——这是推理能跑得动的关键优化，也是显存吃紧的原因。</li>
     </ul>
+  </div>
+
+  <div class="adv" id="advToken">
+    <span class="adv-badge">进阶 · 已开启</span>
+    <h3>现在的大模型，还是每次只预测下一个 token 吗？</h3>
+    <p style="color:var(--muted);margin-top:0"><b style="color:var(--ink)">是的，没变。</b>GPT、Claude、DeepSeek 这些主流模型，训练目标和生成方式至今都是逐个 token 预测下一个。看起来不像，有三个原因：</p>
+    <ul style="color:var(--muted);margin:8px 0;padding-left:20px">
+      <li style="margin:5px 0"><b style="color:var(--ink)">后训练改的是偏好，不是机制</b>：SFT / RLHF 让它倾向于预测「像回答的下一个词」，预测的动作本身没变（下一节就是这条的具体演示）。</li>
+      <li style="margin:5px 0"><b style="color:var(--ink)">思维链也是接龙</b>：推理模型先输出一长串思考，那些「草稿」同样是一个 token 一个 token 生成的，然后才逐 token 写正式答案。</li>
+      <li style="margin:5px 0"><b style="color:var(--ink)">例外只有两个</b>：投机解码——小模型抢着猜几个、大模型并行验证，最终落下来的仍逐个确认；少数扩散语言模型一次生成整段再反复修改，非主流。</li>
+    </ul>
+  </div>
+
+  <div class="card" id="weatherQ" style="margin-top:18px;border-color:var(--orange)">
+    <h3>等一下——我问「今天天气怎么样」，它为什么不接着往下编？</h3>
+    <p style="color:var(--muted);margin-top:0">这是个真问题，朋友看完开场接龙当场就问了。答案分三层，点着往下看：同一个输入，三种命运。</p>
+    <div class="toks" style="margin-bottom:12px"><span class="tok" style="font-size:18px">⌨ 输入：今天天气怎么样</span></div>
+    <div class="seg" id="wqSeg">
+      <button data-wq="0" class="on">① 裸模型 · 只会接龙</button><button data-wq="1">② 聊天模型 · 被教过回答</button><button data-wq="2">③ 接上工具 · 才知道真天气</button>
+    </div>
+    <div id="wqOut" style="margin-top:14px"></div>
+    <p style="color:var(--muted);margin-bottom:0" id="wqNote"></p>
   </div>
 
   <div class="quiz" data-quiz="infer"></div>
@@ -844,6 +1132,7 @@ var QUIZZES={
 };
 document.querySelectorAll('.quiz').forEach(function(box){
   var key=box.getAttribute('data-quiz'), qs=QUIZZES[key];
+  if(!qs) return;
   var html='<h3 style="font-size:19px;font-weight:800">🧪 本幕小测 · 点一点，立刻知道对错</h3>';
   qs.forEach(function(item,qi){
     html+='<div class="q"><p class="qq">'+(qi+1)+'. '+item.q+'</p><div class="opts">'+
@@ -862,6 +1151,242 @@ document.querySelectorAll('.quiz').forEach(function(box){
     });
   });
 });
+
+/* ================= 进阶模式开关 ================= */
+TERMS.dot={name:"点积",en:"Dot Product · 矩阵乘法的基本动作",plain:"两个向量逐位相乘再加起来，得到一个数。它衡量「方向有多一致」：越一致值越大。矩阵乘法就是成批的点积，信号传递和注意力打分都靠它。",where:"出现：地基实验室 · 第二幕进阶"};
+TERMS.sigmoid={name:"挤压函数",en:"Sigmoid",plain:"把任意大小的数压进 0~1 的 S 形函数。老式网络每个节点都用它；缺点是两头太平，梯度几乎为 0，深层网络会「学不动」。",where:"出现：地基实验室"};
+TERMS.norm={name:"归一化",en:"Normalization",plain:"把数值拉回一个正常范围再往下传，防止某些数大到失控。手动版是输入缩放 0.01~0.99；现代版是 LayerNorm、Softmax 里「除以总和」这类内建动作。",where:"出现：地基实验室 · 第二幕进阶"};
+TERMS.epoch={name:"世代",en:"Epoch",plain:"把全部训练数据完整过一遍，叫一个世代。世代太少没学够，太多会开始背题（过拟合）。",where:"出现：地基实验室"};
+TERMS.localmin={name:"局部最小值",en:"Local Minimum",plain:"下山时卡住的一个小坑：四周都比这里高，但它不是全局最低点。梯度下降可能停在这种坑里出不来。",where:"出现：地基实验室"};
+TERMS.overfit={name:"过拟合",en:"Overfitting",plain:"把训练题背得滚瓜烂熟、遇到新题反而不会。练得越多不一定越好，过了甜蜜点就是它。解法：更多数据、数据增强、Dropout、早停。",where:"出现：地基实验室"};
+TERMS.backprop={name:"反向传播",en:"Backpropagation",plain:"把输出误差沿着连接、按权重比例一层层往回分摊，让每个权重都知道自己该改多少。再配上梯度下降，就是训练的全部核心动作。",where:"出现：地基实验室 · 第一幕"};
+TERMS.xent={name:"交叉熵",en:"Cross-Entropy Loss",plain:"分类任务的 Loss 尺子：Loss = −log（模型给正确类别的概率）。给对的概率越低、罚得越狠，而且涨速越来越快。大模型猜下一个词，用的就是它。",where:"出现：第一幕进阶"};
+TERMS.ppl={name:"困惑度",en:"Perplexity",plain:"由平均 Loss 换算来的指标，粗略理解：模型每走一步，平均要在多少个候选词之间纠结。越低说明它越「心中有数」。",where:"出现：第一幕进阶"};
+TERMS.softmax={name:"分数变概率",en:"Softmax",plain:"把一排原始分数变成加起来等于 1 的概率：先各自取指数（放大差距），再除以总和（归一化）。挑词、注意力权重、分类输出都靠它收尾。",where:"出现：第一幕进阶 · 第二幕"};
+TERMS.posenc={name:"座位号",en:"Positional Encoding · 位置编码",plain:"加在词向量上的位置信息，告诉模型谁先谁后。没有它，「猫吃鱼」和「鱼吃猫」在模型眼里没区别。",where:"出现：第二幕进阶"};
+(function(){
+  var btn=document.getElementById('advToggle'); if(!btn) return;
+  btn.addEventListener('click',function(){
+    var on=document.body.classList.toggle('adv-on');
+    btn.setAttribute('aria-checked',on?'true':'false');
+    if(on){ var first=document.querySelector('.adv'); if(first) first.scrollIntoView({behavior:'smooth',block:'center'}); }
+  });
+})();
+
+/* ================= 地基实验室 ================= */
+var DIGIT_T={
+0:[".######.","##....##","##....##","##...###","##..#.##","##.#..##","###...##","##....##","##....##",".######."],
+1:["...##...","..###...",".####...","...##...","...##...","...##...","...##...","...##...","...##...","..####.."],
+2:[".######.","##....##","......##",".....##.","....##..","...##...","..##....",".##.....","##......","########"],
+3:[".######.","##....##","......##","...####.","......##","......##","##....##","##....##",".######.","........"],
+4:["....##..","...###..","..####..",".##.##..","##..##..","########","....##..","....##..","....##..","....##.."],
+5:["########","##......","##......","#######.","......##","......##","......##","##....##",".######.","........"],
+6:["...####.","..##....",".##.....","##......","#######.","##....##","##....##","##....##",".######.","........"],
+7:["########","......##",".....##.","....##..","...##...","..##....","..##....","..##....","..##....","..##...."],
+8:[".######.","##....##","##....##",".######.","##....##","##....##","##....##","##....##",".######.","........"],
+9:[".######.","##....##","##....##","##....##",".#######","......##",".....##.","....##..","..###...","........"]};
+var DIGIT_PRESETS={
+ clean3:{rows:DIGIT_T[3],truth:3},
+ noisy3:{rows:[".######.","##...+##","......##","...+###.","..+...##","......##","##....##","##.+..##",".######.","..+....."],truth:3},
+ noisy6:{rows:[".######.","##....##","##....##","##.#####","#######.","##....##","##....##","##....##",".######.","........"],truth:6}};
+var CHV={' ':0,'.':0.3,'+':0.65,'#':1};
+function rowsToVec(rows){ var v=[]; rows.forEach(function(r){ for(var i=0;i<r.length;i++) v.push(CHV[r[i]]); }); return v; }
+function corrVec(a,b){ var ma=0,mb=0,i; for(i=0;i<a.length;i++){ma+=a[i];mb+=b[i];} ma/=a.length; mb/=b.length;
+  var num=0,da=0,db=0; for(i=0;i<a.length;i++){ num+=(a[i]-ma)*(b[i]-mb); da+=(a[i]-ma)*(a[i]-ma); db+=(b[i]-mb)*(b[i]-mb); }
+  return (da>0&&db>0)? num/Math.sqrt(da*db) : 0; }
+(function(){
+  var board=document.getElementById('pxBoard'); if(!board) return;
+  var cells=[], vals=new Array(100).fill(0), currentPreset='clean3';
+  for(var i=0;i<100;i++){ var c=document.createElement('i'); board.appendChild(c); cells.push(c); }
+  function paint(idx,level){ vals[idx]=level; cells[idx].className=level>0?('l'+level):''; }
+  function loadRows(rows){ for(var r=0;r<10;r++) for(var col=0;col<10;col++){ var v=CHV[rows[r][col]]; paint(r*10+col, v===0?0:(v<=0.3?1:(v<=0.65?2:3))); } }
+  loadRows(DIGIT_T[3]);
+  var painting=false, erase=false;
+  function cellFromEvent(e){ var t=document.elementFromPoint(e.clientX,e.clientY); if(!t||t.parentNode!==board) return -1; return Array.prototype.indexOf.call(board.children,t); }
+  board.addEventListener('pointerdown',function(e){ e.preventDefault(); erase=(e.button===2); painting=true; currentPreset=null; var idx=cellFromEvent(e); if(idx>=0) paint(idx,erase?0:3); });
+  board.addEventListener('pointermove',function(e){ if(!painting) return; var idx=cellFromEvent(e); if(idx>=0){ currentPreset=null; paint(idx,erase?0:3); } });
+  window.addEventListener('pointerup',function(){ painting=false; });
+  board.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+  document.querySelectorAll('[data-preset]').forEach(function(b){ b.addEventListener('click',function(){
+    var p=DIGIT_PRESETS[b.getAttribute('data-preset')]; currentPreset=b.getAttribute('data-preset'); loadRows(p.rows);
+    document.getElementById('labHint').textContent='已载入预置图，点「开始识别」。';
+    document.getElementById('labVerdict').style.display='none'; document.getElementById('labOut').innerHTML='';
+  }); });
+  document.getElementById('labClear').addEventListener('click',function(){ currentPreset=null; for(var i=0;i<100;i++) paint(i,0);
+    document.getElementById('labOut').innerHTML=''; document.getElementById('labVerdict').style.display='none';
+    document.getElementById('labHint').textContent='在格子上涂一个数字，再点「开始识别」。'; });
+  document.getElementById('labRun').addEventListener('click',function(){
+    var input=vals.map(function(l){ return l/3; });
+    if(input.every(function(v){return v===0;})){ document.getElementById('labHint').textContent='画布是空的——先画点东西。'; return; }
+    ['fs1','fs2','fs3'].forEach(function(id){ document.getElementById(id).classList.remove('on'); });
+    document.getElementById('labOut').innerHTML=''; document.getElementById('labVerdict').style.display='none';
+    var scaled=input.map(function(v){ return v*0.99+0.01; });
+    document.getElementById('fs1Body').innerHTML='已摊平为 100 个数（原书 784 个）。前 8 个：<span class="mono">'+scaled.slice(0,8).map(function(v){return v.toFixed(2);}).join(', ')+'…</span>';
+    document.getElementById('fs1').classList.add('on');
+    setTimeout(function(){ document.getElementById('fs2').classList.add('on'); },650);
+    setTimeout(function(){
+      document.getElementById('fs3').classList.add('on');
+      var scores=[], d;
+      for(d=0;d<10;d++) scores.push({d:d,c:corrVec(input,rowsToVec(DIGIT_T[d]))});
+      var ex=scores.map(function(s){ return Math.exp(8*s.c); }), sum=ex.reduce(function(a,b){return a+b;},0);
+      scores.forEach(function(s,i){ s.p=ex[i]/sum*100; });
+      scores.sort(function(a,b){ return b.p-a.p; });
+      document.getElementById('labOut').innerHTML=scores.map(function(s,i){
+        return '<div class="outbar'+(i===0?' win':'')+'"><span class="d">'+s.d+'</span><span class="bar"><i style="width:'+Math.max(s.p,1.2)+'%"></i></span><span class="p">'+s.p.toFixed(1)+'%</span></div>';
+      }).join('');
+      var top=scores[0].d, verdict=document.getElementById('labVerdict');
+      verdict.style.display='block';
+      if(currentPreset==='noisy6'){ verdict.className='verdict bad'; verdict.innerHTML='✗ 它认成 <b>'+top+'</b>，正确答案是 6。这正是原书记录的翻车长相：噪点把 6 的上半个开口封成了圈，看起来太像 8——网络只认权重里的图案，图案被污染就会认错。'; }
+      else if(currentPreset==='noisy3'){ verdict.className='verdict ok'; verdict.innerHTML='✓ 它认成 <b>3</b>。图上加了噪点、还糊了几处，它照样认对了——知识分布在全部权重里，坏几个像素不影响大局，这就是原书说的弹性。'; }
+      else if(currentPreset==='clean3'){ verdict.className='verdict ok'; verdict.innerHTML='✓ 它认成 <b>3</b>，而且信心最高。注意第二名往往是 8——3 和 8 本来就长得像，网络也在这两个之间最纠结。'; }
+      else { verdict.className='verdict ok'; verdict.innerHTML='它认成 <b>'+top+'</b>（模拟输出）。画得越接近标准写法、越居中，它越有把握；这只是原理演示，不是原书那台真网络。'; }
+    },1300);
+  });
+  /* 黑盒热力图 */
+  var heatBtns=document.getElementById('heatBtns'), heatGrid=document.getElementById('heatGrid');
+  for(var d2=0;d2<10;d2++){ (function(dd){ var b=document.createElement('button'); b.className='btn ghost sm'+(dd===3?' orange':''); b.textContent='数字 '+dd;
+    b.addEventListener('click',function(){ heatBtns.querySelectorAll('button').forEach(function(x){x.classList.remove('orange');}); b.classList.add('orange'); renderHeat(dd); });
+    heatBtns.appendChild(b); })(d2); }
+  function renderHeat(dd){ var rows=DIGIT_T[dd], html=''; for(var r=0;r<10;r++) for(var c=0;c<10;c++){ var v=CHV[rows[r][c]]; html+='<i style="background:rgba(11,92,173,'+(0.06+v*0.94)+')"></i>'; } heatGrid.innerHTML=html; }
+  renderHeat(3);
+  /* 参数实验室：学习率 */
+  var LR=[{acc:'92.41%',w:92.41,t:'步子太小：方向没错，但每遍只挪一点点，要很多世代才学得会——慢，本身就是一种成本。'},
+          {acc:'95.23%',w:95.23,t:'甜点区：步子稳，成绩好。原书后续实验就固定在这一档附近。'},
+          {acc:'95.37%',w:95.37,t:'全场最佳：原书试出的冠军学习率，后面的实验都改用它。'},
+          {acc:'约 95%',w:95.0,t:'还行，但已经开始有点晃了。比 0.2 没有更好，说明再大就不划算。'},
+          {acc:'90.47%',w:90.47,t:'步子太大：下山时来回跳过最低点，成绩明显变差。呼应第一幕那个能把训练「炸掉」的滑杆。'}];
+  document.querySelectorAll('#lrSeg button').forEach(function(b){ b.addEventListener('click',function(){
+    document.querySelectorAll('#lrSeg button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on');
+    var item=LR[+b.getAttribute('data-lr')];
+    document.getElementById('lrAcc').textContent=item.acc; document.getElementById('lrBar').style.width=item.w+'%'; document.getElementById('lrText').textContent=item.t;
+  }); });
+  /* 参数实验室：世代 */
+  var EP=[[1,95.4,'第 1 世代：约 95.4%（原书实测约数）。只刷一遍题就有这个成绩，小网络不弱。'],
+          [2,95.79,'第 2 世代：95.79%（原书实测）。多刷一遍，稳步变好。'],
+          [3,95.9,'第 3 世代：约 95.9%（约数）。还在涨，但涨幅开始变小。'],
+          [4,96.05,'第 4 世代：约 96.05%（约数）。接近甜蜜点。'],
+          [5,96.2,'第 5 世代：甜蜜点（原书判断）。再往后，风险开始大于收益。'],
+          [6,95.75,'第 6 世代：反常回落！原书特意保留的怪点——可能是卡在了局部最小值附近，也提醒我们：学习是随机过程，曲线不会乖乖单调上升。'],
+          [7,96.28,'第 7 世代：96.28%（原书实测峰值）。注意：这是学习率 0.2 这条线；换成 0.1 多练，原书到过 96.89%。']];
+  function drawEp(cur){
+    var W=420,H=190,pl=40,pr=16,pt=14,pb=28,iw=W-pl-pr,ih=H-pt-pb, lo=94.6, hi=96.8;
+    var s='<line class="axis" x1="'+pl+'" y1="'+pt+'" x2="'+pl+'" y2="'+(H-pb)+'"/><line class="axis" x1="'+pl+'" y1="'+(H-pb)+'" x2="'+(W-pr)+'" y2="'+(H-pb)+'"/>';
+    s+='<text x="4" y="'+(pt+4)+'">准确率</text><text x="'+(W-64)+'" y="'+(H-6)+'">世代 →</text>';
+    EP.forEach(function(p,i){ var x=pl+(p[0]-1)/6*iw, y=pt+ih-(p[1]-lo)/(hi-lo)*ih; p._x=x; p._y=y; });
+    s+='<polyline fill="none" stroke="var(--cyan)" stroke-width="2.5" points="'+EP.map(function(p){return p._x.toFixed(1)+','+p._y.toFixed(1);}).join(' ')+'"/>';
+    EP.forEach(function(p,i){ var hot=(p[0]===cur), dip=(p[0]===6);
+      s+='<circle cx="'+p._x+'" cy="'+p._y+'" r="'+(hot?6:4)+'" fill="'+(dip?'var(--red)':(hot?'var(--orange)':'var(--cyan)'))+'"/>';
+      s+='<text x="'+(p._x-8)+'" y="'+(p._y-10)+'" style="font-weight:700;fill:'+(dip?'var(--red)':'var(--muted)')+'">'+p[1].toFixed(2)+'</text>';
+      if(dip) s+='<text x="'+(p._x-24)+'" y="'+(p._y+20)+'" style="fill:var(--red);font-weight:700">反常回落</text>'; });
+    document.getElementById('epChart').innerHTML=s;
+  }
+  var epRange=document.getElementById('epRange');
+  function epRefresh(){ var v=+epRange.value; document.getElementById('epOut').textContent=v; drawEp(v); document.getElementById('epText').textContent=EP[v-1][2]; }
+  epRange.addEventListener('input',epRefresh); epRefresh();
+  /* 参数实验室：隐藏节点 */
+  var HID=[{acc:'70.01%',w:70.01,t:'只有 5 个隐藏节点：784×5+5×10 = 3,970 个权重。5 座车载 10 人，容量根本不够——但它居然还能认对七成，原书都说让人侧目。'},
+           {acc:'89.98%',w:89.98,t:'10 个节点：7,940 个权重。一下子涨到近九成，容量开始够用了。'},
+           {acc:'约 95%',w:95.0,t:'100 个节点：79,400 个权重。进入九成五俱乐部。'},
+           {acc:'97.51%',w:97.51,t:'200 个节点：158,800 个权重，原书当时的新纪录。容量与成本的平衡点。'},
+           {acc:'97.62%',w:97.62,t:'500 个节点：397,000 个权重，只比 200 个节点多 0.11%，却慢得多——容量够了之后，堆节点是笔亏本买卖。'}];
+  document.querySelectorAll('#hidSeg button').forEach(function(b){ b.addEventListener('click',function(){
+    document.querySelectorAll('#hidSeg button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on');
+    var item=HID[+b.getAttribute('data-h')];
+    document.getElementById('hidAcc').textContent=item.acc; document.getElementById('hidBar').style.width=item.w+'%'; document.getElementById('hidText').textContent=item.t;
+  }); });
+  document.getElementById('hidText').textContent=HID[3].t;
+  /* 参数实验室：数据增强 */
+  var augOn=false;
+  document.getElementById('augToggle').addEventListener('click',function(){
+    augOn=!augOn; this.setAttribute('aria-checked',augOn?'true':'false');
+    this.querySelector('.track').style.background=augOn?'var(--orange)':'';
+    document.getElementById('augAcc').textContent=augOn?'96.69%':'95.4%';
+    document.getElementById('augBar').style.width=augOn?'96.69%':'95.4%';
+    document.getElementById('augText').textContent=augOn?'开启后：96.69%（原书 3.3 实测）。没换模型、没加节点，只是让它见过更多「歪着写的数字」，泛化立刻变好——数据，常常比结构更值钱。':'未开启：只用原始 6 万张训练图。';
+  });
+  /* sigmoid */
+  function sig(x){ return 1/(1+Math.exp(-x)); }
+  function drawSig(xv){
+    var W=420,H=170,pl=36,pr=12,pt=12,pb=24,iw=W-pl-pr,ih=H-pt-pb, i;
+    var s='<line class="axis" x1="'+pl+'" y1="'+(pt+ih/2)+'" x2="'+(W-pr)+'" y2="'+(pt+ih/2)+'"/><line class="axis" x1="'+(pl+iw/2)+'" y1="'+pt+'" x2="'+(pl+iw/2)+'" y2="'+(H-pb)+'"/>';
+    s+='<text x="2" y="'+(pt+4)+'">1.0</text><text x="2" y="'+(pt+ih+4)+'">0</text><text x="'+(W-52)+'" y="'+(H-6)+'">输入 x</text>';
+    var pts=[]; for(i=0;i<=60;i++){ var x=-8+16*i/60, px=pl+(x+8)/16*iw, py=pt+ih-sig(x)*ih; pts.push(px.toFixed(1)+','+py.toFixed(1)); }
+    s+='<polyline fill="none" stroke="var(--orange)" stroke-width="2.5" points="'+pts.join(' ')+'"/>';
+    var cx=pl+(xv+8)/16*iw, cy=pt+ih-sig(xv)*ih;
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="5.5" fill="var(--blue)"/>';
+    document.getElementById('sigChart').innerHTML=s;
+  }
+  var sigRange=document.getElementById('sigRange');
+  function sigRefresh(){ var x=+sigRange.value/10; document.getElementById('sigOut').textContent='x = '+x.toFixed(1)+' → σ(x) = '+sig(x).toFixed(2)+(Math.abs(x)>5?'（已进入平坦区，梯度≈0）':''); drawSig(x); }
+  sigRange.addEventListener('input',sigRefresh); sigRefresh();
+  /* 实验室小测 */
+  var LQ=[
+    {q:'输入为什么要缩放到 0.01~0.99，而不是直接用 0~1？',opts:['为了省电，没有别的原因','输入 0 会让连接学不到东西，目标 1 又会把权重逼过大、让 sigmoid 饱和','纯粹是作者的个人习惯'],ans:1,why:'这是<b>归一化</b>意识的第一次出现：把数值放进函数「学得动」的范围。现代网络把它内建成了 LayerNorm。'},
+    {q:'学习率开到 0.6，成绩反而从 95% 掉到 90.47%，最可能的原因是？',opts:['数据被用完了','步子太大，下山时反复跳过最低点','隐藏节点太少'],ans:1,why:'原书实测。学习率不是越大越快——<b>迈过头</b>和迈不到一样糟，甜点在 0.1~0.3。'},
+    {q:'隐藏节点从 200 加到 500，成绩只涨了 0.11%，这说明什么？',opts:['实验做错了','容量够用之后，再堆规模收益极小、成本却照涨','参数量和性能永远成正比'],ans:1,why:'从原书这台小网络到千亿参数大模型，这条<b>边际收益递减</b>的规律一直在——规模要花在刀刃上。'}];
+  var box=document.getElementById('labQuiz');
+  if(box){ var html='<h3 style="font-size:19px;font-weight:800">🧪 地基小测 · 点一点，立刻知道对错</h3>';
+    LQ.forEach(function(item,qi){ html+='<div class="q"><p class="qq">'+(qi+1)+'. '+item.q+'</p><div class="opts">'+item.opts.map(function(o,oi){return '<button class="opt" data-q="'+qi+'" data-o="'+oi+'">'+o+'</button>';}).join('')+'</div><div class="why" id="labwhy-'+qi+'">'+item.why+'</div></div>'; });
+    box.innerHTML=html;
+    box.querySelectorAll('.opt').forEach(function(btn){ btn.addEventListener('click',function(){
+      var qi=+btn.getAttribute('data-q'), oi=+btn.getAttribute('data-o'), item=LQ[qi], qEl=btn.closest('.q');
+      qEl.querySelectorAll('.opt').forEach(function(b){ b.classList.remove('right','wrong'); });
+      if(oi===item.ans){ btn.classList.add('right'); } else { btn.classList.add('wrong'); qEl.querySelectorAll('.opt')[item.ans].classList.add('right'); }
+      document.getElementById('labwhy-'+qi).classList.add('show');
+    }); });
+  }
+})();
+
+/* ================= 进阶：交叉熵计算器 ================= */
+(function(){
+  var r=document.getElementById('ceRange'); if(!r) return;
+  function f(){ var p=+r.value/100; document.getElementById('ceOut').textContent='p = '+p.toFixed(2)+' → Loss = '+(-Math.log(p)).toFixed(2); }
+  r.addEventListener('input',f); f();
+})();
+
+/* ================= 进阶：词向量语义地图 ================= */
+(function(){
+  var svg=document.getElementById('embScatter'); if(!svg) return;
+  var PTS={'国王':[330,80],'王后':[368,52],'男人':[110,225],'女人':[148,197],'猫':[70,105],'狗':[102,78],'鱼':[142,58],'苹果':[298,238],'香蕉':[340,210]};
+  var NOTES={'国王':'「国王」：和「王后」近、和「男人」保持着一段固定距离——这段距离的方向，就是「性别」这个概念在空间里留下的箭头。',
+    '王后':'「王后」：女人 + （国王 − 男人）≈ 正好落在这里。这就是著名的向量运算：国王 − 男人 + 女人 ≈ 王后。',
+    '男人':'「男人」：和「女人」是邻居，和水果、动物离得很远。距离即语义。',
+    '女人':'「女人」：从它出发、沿着「男人→国王」同一支箭头走一遍，落点几乎正中「王后」。',
+    '猫':'「猫」：和「狗」「鱼」聚成动物团。模型从没见过猫长什么样，它只知道：猫这个词出现的位置，和狗、鱼很像。',
+    '狗':'「狗」：动物的邻居。语义相近不是谁规定的，是语料里它们总出现在相似的句子里，训练把它们摆近了。',
+    '鱼':'「鱼」：在动物团边缘——它还离「吃」这类语境近，这也是「猫 吃 _」能猜出鱼的深层原因。',
+    '苹果':'「苹果」：水果团。和动物团隔得老远：坐标距离，就是模型理解世界的方式。',
+    '香蕉':'「香蕉」：苹果的邻居。真实空间是 4096 维，这张图只是把高维位置压扁投影到 2D 的示意。'};
+  var s='<line x1="30" y1="270" x2="440" y2="270" stroke="var(--line)"/><line x1="30" y1="270" x2="30" y2="16" stroke="var(--line)"/>';
+  s+='<defs><marker id="arrH" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--orange)"/></marker></defs>';
+  s+='<line x1="'+PTS['男人'][0]+'" y1="'+PTS['男人'][1]+'" x2="'+PTS['国王'][0]+'" y2="'+PTS['国王'][1]+'" stroke="var(--orange)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrH)"/>';
+  s+='<line x1="'+PTS['女人'][0]+'" y1="'+PTS['女人'][1]+'" x2="'+PTS['王后'][0]+'" y2="'+PTS['王后'][1]+'" stroke="var(--orange)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrH)"/>';
+  s+='<circle cx="'+PTS['王后'][0]+'" cy="'+PTS['王后'][1]+'" r="13" fill="none" stroke="var(--orange)" stroke-width="1.6" stroke-dasharray="3 3"/>';
+  Object.keys(PTS).forEach(function(w){ var p=PTS[w];
+    s+='<g class="pt" data-w="'+w+'"><circle cx="'+p[0]+'" cy="'+p[1]+'" r="7" fill="var(--blue)"/><text x="'+(p[0]+11)+'" y="'+(p[1]+5)+'">'+w+'</text></g>'; });
+  s+='<text x="330" y="292" style="font-size:12px;fill:var(--muted);font-weight:400">2D 投影示意 · 真实为数千维</text>';
+  svg.innerHTML=s;
+  svg.querySelectorAll('.pt').forEach(function(g){ g.addEventListener('click',function(){
+    var w=g.getAttribute('data-w'); document.getElementById('scatterExplain').innerHTML='📌 <b>'+w+'</b>：'+NOTES[w]; }); });
+})();
+
+/* ================= 天气问答三层演示 ================= */
+(function(){
+  var seg=document.getElementById('wqSeg'); if(!seg) return;
+  var LAYERS=[
+    {out:'<div class="msg user"><span class="role">续写输出 · 裸的基座模型</span>今天天气怎么样，明天会下雨吗，后天呢？大后天呢？……据天气预报，本周天气以晴为主，气温 15~25℃，适宜出行。</div>',
+     note:'<b>裸模型（基座模型）</b>眼里没有「问题」，只有一段没写完的文字：训练语料里，这句话后面常跟着一串问句、或一篇天气预报的开头，它就顺着最像的方向编下去——连天气数字都是现编的。'},
+    {out:'<div class="ctx-list"><div class="msg user"><span class="role">USER</span>今天天气怎么样</div><div class="msg assistant"><span class="role">ASSISTANT</span>今天天气不错，晴，18~26℃，适合出门走走。</div></div>',
+     note:'<b>聊天模型</b>被后训练过：海量「问→答」对话（SFT / RLHF）加上固定的角色格式，让它在「轮到 assistant 发言」的位置上，最可能接出的就是一个回答。口诀：不是它学会了查答案，是它学会了<b>在该回答的位置上，把回答接出来</b>。但注意——天气数字仍然是编的，它压根不知道「今天」是哪天、天气如何，这样一本正经地编，术语叫 <span class="term" data-term="hallu">幻觉</span>。'},
+    {out:'<div class="ctx-list"><div class="msg tool"><span class="role">TOOL · 天气 API 返回（你的代码真去查的）</span><span class="mono">{"city":"上海","weather":"中雨","temp":"14~19℃","rain_prob":"90%"}</span></div><div class="msg assistant"><span class="role">ASSISTANT</span>今天上海中雨，14~19℃，降雨概率 90%，出门记得带伞。</div></div>',
+     note:'<b>真产品靠工具</b>：它自己依然不知道天气——是你的代码先调天气 API、把真实数据写回上下文，它再把数据组织成人话。这正是第三幕在做的事，<a href="#agent" style="color:var(--blue);font-weight:700">去看这个场景完整跑一遍 →</a>'}
+  ];
+  TERMS.hallu={name:"幻觉",en:"Hallucination",plain:"模型不知道答案时，不会说「不知道」，而是按最像答案的格式一本正经地编。因为它的工作就是接出最像的下文，像不像和是不是真的，是两回事。对策：给它工具查真数据（第三幕）、用 RAG 递资料。",where:"出现：第二幕 · 第三幕"};
+  function show(i){ document.getElementById('wqOut').innerHTML=LAYERS[i].out; document.getElementById('wqNote').innerHTML=LAYERS[i].note; }
+  seg.querySelectorAll('button').forEach(function(b){ b.addEventListener('click',function(){
+    seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');}); b.classList.add('on'); show(+b.getAttribute('data-wq')); }); });
+  show(0);
+})();
 </script>
 </body>
 </html>
